@@ -122,7 +122,6 @@ class mediacore_client
     private $_scheme = 'http';
     private $_chooser_url = '/chooser';
     private $_chooser_js_url = '/api/chooser.js';
-    private $_ieframe_url = '/chooser/ieframe_proxy';
     private $_media_api_url = '/api/media';
     private $_media_get_api_url = '/api/media/get';
 
@@ -231,27 +230,11 @@ class mediacore_client
     }
 
     /**
-     * Sign and return the chooser.js endpoint using LTI
-     * XXX: Not used
-     * @param string|int $course_id
-     * @return string
-     */
-    public function get_signed_chooser_js_url($course_id) {
-        $endpoint = $this->get_baseurl() . $this->_chooser_js_url;
-        return $endpoint . '?' . $this->url_encode_params($this->get_signed_lti_params(
-                $endpoint, $course_id)
-            );
-    }
-
-    /**
      * Get the chooser url
      * @return string
      */
     public function get_chooser_url() {
-        global $COURSE;
-        return ($this->_config->has_lti_config() && isset($COURSE->id))
-            ? $this->get_signed_chooser_url($COURSE->id)
-            : $this->get_baseurl() . $this->_chooser_url;
+        return  $this->get_baseurl() . $this->_chooser_url;
     }
 
     /**
@@ -259,33 +242,10 @@ class mediacore_client
      * @param string|int $course_id
      * @return string
      */
-    public function get_signed_chooser_url($course_id) {
+    public function get_signed_chooser_url($course_id, $lti_params=array()) {
         $endpoint = $this->get_baseurl() . $this->_chooser_url;
         return $endpoint . '?' . $this->url_encode_params($this->get_signed_lti_params(
-                $endpoint, $course_id)
-            );
-    }
-
-    /**
-     * Get the ieframe proxy url
-     * @return string
-     */
-    public function get_ieframe_url() {
-        global $COURSE;
-        return ($this->_config->has_lti_config() && isset($COURSE->id))
-            ? $this->get_signed_ieframe_url($COURSE->id)
-            : $this->get_baseurl() . $this->_ieframe_url;
-    }
-
-    /**
-     * Sign and return the LTI-signed ieframe endpoint
-     * @param string|int $course_id
-     * @return string
-     */
-    public function get_signed_ieframe_url($course_id) {
-        $endpoint = $this->get_baseurl() . $this->_ieframe_url;
-        return $endpoint . '?' . $this->url_encode_params($this->get_signed_lti_params(
-                $endpoint, $course_id)
+                $endpoint, $course_id, $lti_params)
             );
     }
 
@@ -413,28 +373,17 @@ class mediacore_client
      */
     public function get_tinymce_params() {
         global $CFG, $COURSE;
+        $params['chooser_js_url'] = $this->get_chooser_js_url();
+
         if ($this->has_lti_config() && isset($COURSE->id)) {
             $lti_params = array(
                     'origin' => $this->get_webroot(),
                 );
-            $params['chooser_query_str'] = $this->url_encode_params(
-                    $this->get_signed_lti_params(
-                        $this->get_chooser_url(),
-                        $COURSE->id,
-                        $lti_params
-                    )
-                );
-            $params['ieframe_query_str'] = $this->url_encode_params(
-                    $this->get_signed_lti_params(
-                        $this->get_ieframe_url(),
-                        $COURSE->id,
-                        $lti_params
-                    )
-                );
+            $params['chooser_url'] = $this->get_signed_chooser_url(
+                    $COURSE->id, $lti_params);
+        } else {
+            $params['chooser_url'] = $this->get_chooser_url();
         }
-        $params['chooser_js_url'] = $this->get_chooser_js_url();
-        $params['host'] = $this->get_hostname_and_port();
-        $params['scheme'] = $this->get_scheme();
         return $params;
     }
 }
