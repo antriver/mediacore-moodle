@@ -19,7 +19,7 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 $plugin                     = new StdClass();
 $plugin->component          = 'filter_mediacore';
-$plugin->version            = 2013050100;
+$plugin->version            = 2013081200;
 $plugin->requires           = 2011033007;
-$plugin->release            = '2.0b';
+$plugin->release            = '2.1';
 $plugin->dependencies       = array('local_mediacore' => 2013031900);
