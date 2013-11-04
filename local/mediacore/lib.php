@@ -304,11 +304,10 @@ class mediacore_client
             : '';
         $user_email = (isset($USER->email)) ? $USER->email: '';
 
-        return array(
+        $ret =  array(
             'context_id' => $course->id,
             'context_label' => $course->shortname,
             'context_title' => $course->fullname,
-            'debug' => ((boolean)$CFG->debugdisplay) ? 'true' : 'false',
             'ext_lms' => 'moodle-2',
             'lis_person_name_family' =>  $user_family,
             'lis_person_name_full' =>  $user_full,
@@ -321,6 +320,12 @@ class mediacore_client
             'tool_consumer_info_version' => (string)$CFG->version,
             'user_id' => $USER->id,
         );
+
+        //add debug flag for local testing
+        if ((boolean)$CFG->debugdisplay) {
+            $ret['debug'] = 'true';
+        }
+        return $ret;
     }
 
     /**
