@@ -132,14 +132,22 @@ class mediacore_client
         global $CFG;
 
         $this->_config = new mediacore_config();
-        $this->_scheme = parse_url($this->_config->get_webroot(),
-            PHP_URL_SCHEME);
-
+        $this->_scheme = $this->get_server_scheme();
         $mcore_url_components = parse_url($this->_config->get_url());
         $this->_hostname = $mcore_url_components['host'];
         if (isset($mcore_url_components['port'])) {
             $this->_port = $mcore_url_components['port'];
         }
+    }
+
+    /**
+     * Calculate and return the server's scheme/protocol
+     * @return string
+     */
+    public function get_server_scheme() {
+        return (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) &&
+                strtolower($_SERVER['HTTPS']) != "off")
+                ? 'https' : 'http';
     }
 
     /**
