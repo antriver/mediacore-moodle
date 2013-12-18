@@ -47,17 +47,31 @@ class tinymce_mediacore extends editor_tinymce_plugin {
             $mcore_client = new mediacore_client();
             $params = $params + $mcore_client->get_tinymce_params();
 
-            // Add button after emoticon button in advancedbuttons3.
-            $added = $this->add_button_after($params, 3, 'mediacore', 'moodleemoticon', false);
-
-            // Note: We know that the emoticon button has already been added, if it
-            // exists, because I set the sort order higher for this. So, if no
-            // emoticon, add after 'image'.
-            if (!$added) {
-                $this->add_button_after($params, 3, 'mediacore', 'image');
+            // Add button after images button
+            if ($row = $this->find_image_button($params)) {
+                $this->add_button_after($params, $row, 'mediacore', 'image');
+            } else {
+                // If 'image' is not found, add button in the end of the last row.
+                $this->add_button_after($params, $this->count_button_rows($params), 'mediacore');
             }
 
             // Add JS file, which uses default name.
             $this->add_js_plugin($params);
         }
+
+    /**
+     * Custom implementation of $this->find_button(array $params, $button
+     *  from Moodle v2.6
+     * @param array $params TinyMCE init parameters array
+     * @return int the image row if exists, lower number if does not exist.
+     */
+    protected function find_image_button(array &$params) {
+        foreach ($params as $key => $value) {
+            if (preg_match('/^theme_advanced_buttons(\d+)$/', $key, $matches) &&
+                    strpos(','. $value. ',', ',image,') !== false) {
+                return (int)$matches[1];
+            }
+        }
+        return false;
+    }
 }
