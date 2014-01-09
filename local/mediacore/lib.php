@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  *       __  _____________   _______   __________  ____  ______
  *      /  |/  / ____/ __ \ /  _/   | / ____/ __ \/ __ \/ ____/
@@ -19,7 +34,7 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 global $CFG;
 require_once($CFG->dirroot. '/mod/lti/locallib.php');
 
-//constants
+// Constants.
 define('MEDIACORE_PLUGIN_NAME', 'local_mediacore');
 define('MEDIACORE_SETTINGS_NAME', 'local_mediacore');
 
@@ -309,16 +324,16 @@ class mediacore_client
             : '';
         $user_email = (isset($USER->email)) ? $USER->email: '';
 
-        $ret =  array(
+        $ret = array(
             'context_id' => $course->id,
             'context_label' => $course->shortname,
             'context_title' => $course->fullname,
             'ext_lms' => 'moodle-2',
-            'lis_person_name_family' =>  $user_family,
-            'lis_person_name_full' =>  $user_full,
-            'lis_person_name_given' =>  $user_given,
+            'lis_person_name_family' => $user_family,
+            'lis_person_name_full' => $user_full,
+            'lis_person_name_given' => $user_given,
             'lis_person_contact_email_primary' => $user_email,
-            'lti_message_type' =>'basic-lti-launch-request',
+            'lti_message_type' => 'basic-lti-launch-request',
             'lti_version' => 'LTI-1p0',
             'roles' => lti_get_ims_role($USER, 0, $course->id),
             'tool_consumer_info_product_family_code' => 'moodle',
@@ -326,7 +341,7 @@ class mediacore_client
             'user_id' => $USER->id,
         );
 
-        //add debug flag for local testing
+        // Add debug flag for local testing.
         if ((boolean)$CFG->debugdisplay) {
             $ret['debug'] = 'true';
         }
@@ -352,14 +367,14 @@ class mediacore_client
         $result = curl_exec($ch);
         curl_close($ch);
 
-        if (!$result) { //curl failed
+        if (!$result) { // Curl failed.
             return FALSE;
         }
         $obj = json_decode($result);
-        if (isset($obj->error)) { //no result found
+        if (isset($obj->error)) { // No result found.
             return NULL;
         }
-        return $obj; //result found
+        return $obj; // Result found.
     }
 
     /**
@@ -369,7 +384,7 @@ class mediacore_client
      */
     public function url_encode_params($params) {
         $encoded_params = '';
-        foreach ($params as $k=>$v) {
+        foreach ($params as $k => $v) {
             $encoded_params .= "$k=" . urlencode($v) . "&";
         }
         return substr($encoded_params, 0 , -1);
@@ -439,7 +454,7 @@ class mediacore_media
      */
     public function fetch_media($curr_pg=0, $search='', $limit=6, $course_id=NULL) {
 
-        $this->_curr_pg = $curr_pg; //zero-indexed
+        $this->_curr_pg = $curr_pg; // Zero-indexed.
         $this->_search = $search;
         $this->_limit = $limit;
 
@@ -460,7 +475,7 @@ class mediacore_media
             return $result_obj;
         }
 
-        //build result data
+        // Build result data.
         $this->_rowset = $result_obj->media;
         $this->_rowset_count = $result_obj->count;
         $this->_pg_count = ceil($this->_rowset_count / $this->_limit);
@@ -643,7 +658,7 @@ class mediacore_media_row
      * @return string
      */
     public function get_url() {
-        /**
+        /*
          * Because the API doesn't provide the embed URL separately (obscures it in the
          * iframe src) and instead supplies a permalink which can differ (e.g. podcasts)
          * from the direct play URL, we need to intercept podcast URIs and reformat them
@@ -710,12 +725,11 @@ class mediacore_media_row
      * @param int $sec
      * @param bool $pad_hours
      */
-    private function _sec2hms ($sec, $pad_hours=FALSE)
-    {
+    private function _sec2hms ($sec, $pad_hours=FALSE) {
         $hms = "";
         $sec = (int)$sec;
 
-        $hours = (int)($sec/3600);
+        $hours = (int)($sec / 3600);
 
         $hms .= ($pad_hours)
             ? str_pad($hours, 2, "0", STR_PAD_LEFT). ":"
@@ -733,22 +747,21 @@ class mediacore_media_row
      * Convert the time to relative time
      * @param int $time
      */
-    private function _relative_time($time)
-    {
+    private function _relative_time($time) {
         $periods = array("second", "minute", "hour", "day", "week", "month", "year", "decade");
-        $lengths = array("60","60","24","7","4.35","12","10");
+        $lengths = array("60", "60", "24", "7", "4.35", "12", "10");
 
         $now = time();
         $difference = $now - $time;
         $tense = "ago";
 
-        for ($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) {
+        for ($j = 0; $difference >= $lengths[$j] && $j < count($lengths) - 1; $j++) {
             $difference /= $lengths[$j];
         }
 
         $difference = round($difference);
         if ($difference != 1) {
-            $periods[$j].= "s";
+            $periods[$j] .= "s";
         }
         return "$difference $periods[$j] ago ";
     }

@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  *       __  _____________   _______   __________  ____  ______
  *      /  |/  / ____/ __ \ /  _/   | / ____/ __ \/ __ \/ ____/
@@ -60,12 +75,12 @@ class repository_mediacore extends repository {
         global $SESSION, $COURSE;
         $sess_keyword = 'mediacore_'.$this->id.'_keyword';
 
-        // This is the request of another page for the last search, retrieve the cached keyword and sort
+        // This is the request of another page for the last search, retrieve the cached keyword and sort.
         if ($page && !$search_text && isset($SESSION->{$sess_keyword})) {
             $search_text = $SESSION->{$sess_keyword};
         }
 
-        // Save this search in session
+        // Save this search in session.
         $SESSION->{$sess_keyword} = $search_text;
 
         $this->keyword = $search_text;
@@ -89,7 +104,7 @@ class repository_mediacore extends repository {
         $media = $this->_mcore_media->fetch_media($page, $search_text,
             MEDIACORE_THUMBS_PER_PAGE, $cid);
         if (!$media) {
-            // TODO: Return that there was an issue connecting MediaCore
+            // TODO: Return that there was an issue connecting MediaCore.
             return array();
         }
 
@@ -98,18 +113,18 @@ class repository_mediacore extends repository {
             $query_string = (isset($lti_type_id) ? '?type_id=' . $lti_type_id : '');
             $thumb = $m->thumbs->s;
             $files_array[] = array(
-                'shorttitle'=>$this->_truncate_text($m->title, 25),
-                'thumbnail_title'=>$this->_truncate_text($m->title),
-                'title'=>$m->title.'.avi',
-                'author'=>$m->author,
-                'datemodified'=>strtotime($m->modified_on),
-                'datecreated'=>strtotime($m->created_on),
-                'thumbnail'=>$thumb->url,
-                'thumbnail_width'=>$thumb->x,
-                'thumbnail_height'=>$thumb->y,
-                'size'=>'',
-                'id'=>$m->id,
-                'source'=>$m->url . $query_string . "#$m->title",
+                'shorttitle' => $this->_truncate_text($m->title, 25),
+                'thumbnail_title' => $this->_truncate_text($m->title),
+                'title' => $m->title.'.avi',
+                'author' => $m->author,
+                'datemodified' => strtotime($m->modified_on),
+                'datecreated' => strtotime($m->created_on),
+                'thumbnail' => $thumb->url,
+                'thumbnail_width' => $thumb->x,
+                'thumbnail_height' => $thumb->y,
+                'size' => '',
+                'id' => $m->id,
+                'source' => $m->url . $query_string . "#$m->title",
             );
         }
         return $files_array;
@@ -159,7 +174,10 @@ class repository_mediacore extends repository {
         $ret['login'] = array($search);
         $ret['login_btn_label'] = get_string('search');
         $ret['login_btn_action'] = 'search';
-        $ret['allowcaching'] = true; // indicates that login form can be cached in filepicker.js
+
+        // Indicates that login form can be cached in filepicker.js.
+        $ret['allowcaching'] = true;
+
         return $ret;
     }
 
