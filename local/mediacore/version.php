@@ -36,4 +36,4 @@ $plugin                     = new stdClass();
 $plugin->component          = 'local_mediacore';
 $plugin->version            = 2014010900;
 $plugin->requires           = 2011033007;
-$plugin->release            = '2.11';
+$plugin->release            = '2.13';
