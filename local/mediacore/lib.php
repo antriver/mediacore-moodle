@@ -43,13 +43,10 @@ class mediacore_config
         global $CFG, $DB;
 
         $this->_webroot = $CFG->wwwroot;
-        $query = "SELECT *
-                  FROM {config_plugins}
-                  WHERE plugin = :plugin";
 
-        $records = $DB->get_records_sql($query, array(
-            'plugin' => MEDIACORE_SETTINGS_NAME,
-        ));
+        $records = $DB->get_records('config_plugins',
+            array('plugin' => MEDIACORE_SETTINGS_NAME));
+
         if (!empty($records)) {
             foreach ($records as $r) {
                 if (!empty($r->value)) {
