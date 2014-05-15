@@ -31,8 +31,11 @@
  */
 
 defined('MOODLE_INTERNAL') || die('Invalid access');
+
 global $CFG;
-require_once($CFG->dirroot . '/local/mediacore/lib.php');
+require_once $CFG->dirroot . '/local/mediacore/lib.php';
+require_once 'mediacore_client.class.php';
+
 
 /**
  * Plugin for MediaCore media
@@ -41,15 +44,13 @@ require_once($CFG->dirroot . '/local/mediacore/lib.php');
  * @copyright 2012 MediaCore Technologies Inc
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tinymce_mediacore extends editor_tinymce_plugin {
-
+class tinymce_mediacore extends editor_tinymce_plugin
+{
     /** @var array list of buttons defined by this plugin */
     protected $buttons = array('mediacore');
 
     protected function update_init_params(array &$params, context $context,
         array $options = null) {
-
-        global $CFG, $COURSE;
 
         // If mediacore filter is disabled, do not add button.
         // Note: Test for "filter/mediacore" to remain compatible with Moodle < 2.5.
