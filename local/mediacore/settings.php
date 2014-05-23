@@ -28,26 +28,24 @@
  * @copyright  2012 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die('Invalid access');
 global $CFG;
-require_once($CFG->dirroot. '/local/mediacore/lib.php');
-
-defined('MOODLE_INTERNAL') || die('Invalid access');
+require_once $CFG->dirroot. '/local/mediacore/lib.php';
 
 if ($hassiteconfig) {
-
     $settings = new admin_settingpage(MEDIACORE_PLUGIN_NAME, get_string('pluginname',
             MEDIACORE_PLUGIN_NAME));
-    $ADMIN->add('localplugins', $settings);
 
-    $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME . '/url',
-            get_string('setting_url_label', MEDIACORE_PLUGIN_NAME),
-            get_string('setting_url_desc', MEDIACORE_PLUGIN_NAME),
-            'http://demo.mediacore.tv', PARAM_TEXT);
+    //host
+    $host_re = '/^(([a-z0-9-]+\.)+([a-z0-9-]{2,})|localhost)(:[0-9]{1,5})*$/';
+    $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME . '/host',
+            get_string('setting_host_label', MEDIACORE_PLUGIN_NAME),
+            get_string('setting_host_desc', MEDIACORE_PLUGIN_NAME),
+            '', $host_re);
     $setting->plugin = MEDIACORE_SETTINGS_NAME;
     $settings->add($setting);
 
+    //consumer_key
     $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME .'/consumer_key',
             get_string('setting_consumer_key_label', MEDIACORE_PLUGIN_NAME),
             get_string('setting_consumer_key_desc', MEDIACORE_PLUGIN_NAME),
@@ -55,6 +53,7 @@ if ($hassiteconfig) {
     $setting->plugin = MEDIACORE_SETTINGS_NAME;
     $settings->add($setting);
 
+    //shared_secret
     $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME . '/shared_secret',
             get_string('setting_shared_secret_label', MEDIACORE_PLUGIN_NAME),
             get_string('setting_shared_secret_desc', MEDIACORE_PLUGIN_NAME),
@@ -62,4 +61,5 @@ if ($hassiteconfig) {
     $setting->plugin = MEDIACORE_SETTINGS_NAME;
     $settings->add($setting);
 
+    $ADMIN->add('localplugins', $settings);
 }
