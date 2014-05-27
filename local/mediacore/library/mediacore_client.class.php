@@ -376,6 +376,33 @@ class mediacore_client
     }
 
     /**
+     * Method for hooking into the Moodle 2.3 Tinymce plugin lib.php
+     * file
+     * @param array $filters
+     * @param array $params
+     * @return array
+     */
+    public function configure_tinymce_lib_params($filters, $params) {
+        if (!function_exists('filter_get_active_in_context')) {
+            throw new Zend_Exception('This class can only be called ' .
+                'from within the tinymce/lib.php file');
+        }
+        if (!isset($filters)) {
+            $filters = filter_get_active_in_context($context);
+        }
+        if (array_key_exists('filter/mediacore', $filters)) {
+            $params = $params + $this->get_tinymce_params();
+            $params['plugins'] .= ',mediacore';
+            if (isset($params['theme_advanced_buttons3_add'])) {
+                $params['theme_advanced_buttons3_add'] .= ",|,mediacore";
+            } else {
+                $params['theme_advanced_buttons3_add'] = ",|,mediacore";
+            }
+        }
+        return $params;
+    }
+
+    /**
      * Get the embed html by parsing the api1 view url for its slug
      * e.g. https://demo.mediacore.tv/media/{slug}?context_id=2
      * @param string $url
