@@ -73,6 +73,10 @@ class mediacore_media
             'status' => 'published',
             'joins' => 'thumbs',
         );
+
+        if (!is_null($course_id)) {
+            $query_params['context_id'] = $course_id;
+        }
         if (!empty($this->_search)) {
             $query_params['search'] = $this->_search;
             $query_params['sort'] = 'relevance';
