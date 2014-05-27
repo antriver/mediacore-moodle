@@ -91,11 +91,14 @@ class repository_mediacore extends repository
 
         $this->keyword = $search_text;
 
-        $ret  = array();
-        $ret['page'] = (int)$page;
-        if (empty($ret['page']) || $ret['page'] < 1) {
-            $ret['page'] = 1;
+        // Clamp the page number to a valid range
+        $page = (int)$page;
+        if (empty($page) || $page < 1) {
+            $page = 1;
         }
+
+        $ret  = array();
+        $ret['page'] = $page;
         $ret['list'] = $this->_get_media($search_text, $ret['page']);
         $ret['nologin'] = true;
         $ret['norefresh'] = true;
