@@ -10,4 +10,3 @@ Session.vim
 ### MediaCore Moodle ###
 /bin/*
 /lib/editor/tinymce/plugins/mediacore/editor_plugin_src.js
-/lib/editor/tinymce/plugins/mediacore/img
