@@ -96,8 +96,8 @@ administration -> Plugins -> Local plugins -> MediaCore package config` and ente
 
 For **Moodle 2.3** installations:
 
-1. Move the `editor_plugin.js` file from `/lib/editor/tinymce/plugins/mediacore/tinymce` to `/lib/editor/tinymce/plugins/mediacore` and **rename** it to `editor_plugin_src.js`.
-2. Move the `img/` directory from `/lib/editor/tinymce/plugins/mediacore/tinymce` to `/lib/editor/tinymce/plugins/mediacore`
+1. Move the `editor_plugin.js` file from `/lib/editor/tinymce/plugins/mediacore/tinymce` to `lib/editor/tinymce/tiny_mce/{version}/plugins/mediacore/` and **rename** it to `editor_plugin_src.js`.
+2. Move the `img/` directory from `/lib/editor/tinymce/plugins/mediacore/tinymce` to `lib/editor/tinymce/tiny_mce/{version}/plugins/mediacore/`
 3. Then, delete the `/lib/editor/tinymce/plugins/mediacore/tinymce` directory.
 3. Now we need to let Moodle know about the MediaCore TinyMCE plugin. Open:
     `/path/to/moodle/lib/editor/tinymce/lib.php`
