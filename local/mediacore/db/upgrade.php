@@ -33,10 +33,12 @@
 function xmldb_local_mediacore_upgrade($oldversion) {
     global $DB;
 
+    // Get the old 'url' setting, if there is one...
     $old_record = $DB->get_record('config_plugins',
             array('plugin'=>'local_mediacore', 'name'=>'url'));
 
-    // Add the host value to the db and delete the old url value
+    // Replace the old 'url' setting with a new 'host' setting
+    // that includes only the hostname and port.
     if ($old_record) {
         $hostname = parse_url($old_record->value, PHP_URL_HOST);
         $port = parse_url($old_record->value, PHP_URL_PORT);
