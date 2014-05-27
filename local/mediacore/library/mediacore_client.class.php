@@ -245,7 +245,7 @@ class mediacore_client
             'tool_consumer_info_product_family_code' => 'moodle',
             'tool_consumer_info_version' => (string)$CFG->version,
             'user_id' => $USER->id,
-            'custom_course_id' => $course->idnumber,
+            'custom_context_id' => $course->idnumber,
             'custom_plugin_info' => $this->_config->get_plugin_info(),
         );
 
