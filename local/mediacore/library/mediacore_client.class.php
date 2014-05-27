@@ -441,6 +441,9 @@ class mediacore_client
         $query_params = array(
             'joins' => 'embedcode',
         );
+        if (!is_null($courseid)) {
+            $query_params['context_id'] = $courseid;
+        }
         if ($this->has_lti_config() && !is_null($courseid)) {
             $authtkt_str = $this->get_auth_cookie($courseid);
             $result = $this->get_curl_response($url, $query_params, $authtkt_str);
