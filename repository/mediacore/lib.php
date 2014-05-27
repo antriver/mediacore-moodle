@@ -80,14 +80,15 @@ class repository_mediacore extends repository
         global $SESSION, $COURSE;
         $sess_keyword = 'mediacore_'.$this->id.'_keyword';
 
-        // This is the request of another page for the last search, retrieve
-        //  the cached keyword and sort.
         if ($page && !$search_text && isset($SESSION->{$sess_keyword})) {
+            // This is the request of another page for the last search, retrieve
+            //  the cached keyword and sort.
             $search_text = $SESSION->{$sess_keyword};
+        } else {
+            // Save this search in session.
+            $SESSION->{$sess_keyword} = $search_text;
         }
 
-        // Save this search in session.
-        $SESSION->{$sess_keyword} = $search_text;
         $this->keyword = $search_text;
 
         $ret  = array();
