@@ -130,7 +130,6 @@ class mediacore_client
 
     /**
      * Get the chooser js url
-     * LTI-signed if there's a courseid and an lti config
      * @return string
      */
     public function get_chooser_js_url() {
