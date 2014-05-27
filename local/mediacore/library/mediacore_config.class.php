@@ -121,6 +121,7 @@ class mediacore_config
      * @return string
      */
     public function get_plugin_info() {
-        return 'moodle-chooser-' . $this->get_version();
+        return 'mediacore-moodle-chooser-' . $this->get_version();
     }
+
 }
