@@ -205,7 +205,7 @@ class mediacore_media_row
     public function get_primary_file_container() {
         $container = $this->_data->primary_file_container;
         if (empty($container) || strpos($container, 'embed') !== false) {
-            $container = 'avi';
+            $container = 'mp4';
         }
         return $container;
     }
