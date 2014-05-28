@@ -147,7 +147,7 @@ class repository_mediacore extends repository
     }
 
     public function get_listing($path='', $page = '') {
-        return array();
+        return $this->search('', $page);
     }
 
     /**
