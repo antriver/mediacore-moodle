@@ -59,7 +59,10 @@ class mediacore_client
     public function __construct() {
         $this->_config = new mediacore_config();
 
-        //config host can include a port
+        // We have to use the fromString method because the 'host' we pass in
+        // may actually contain a port (e.g. 'blah.com:8080' not just 'blah.com')
+        // so we can't just pass it to Zend_Uri_Http.setHost(), like one might
+        // expect
         $this->_uri = Zend_Uri_Http::fromString(
             self::$_scheme . '://' . $this->_config->get_host()
         );
