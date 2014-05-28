@@ -113,7 +113,7 @@ class repository_mediacore extends repository
     private function _get_media($search_text, $page=1, $per_page=30) {
         global $COURSE;
         $cid = isset($COURSE->id) ? $COURSE->id : null;
-        $items = $this->_mcore_media->get_media($search_text, $page, $cid);
+        $items = $this->_mcore_media->get_media($search_text, $page, $per_page, $cid);
 
         $files_array = array();
         $count = 0;
