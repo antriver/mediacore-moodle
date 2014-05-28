@@ -45,7 +45,6 @@ require_once 'mediacore_media_rowset.class.php';
 class mediacore_media
 {
     private $_curr_pg = 1;
-    private $_links_self = '/media';
     private $_mcore_client;
 
     /**
@@ -85,7 +84,7 @@ class mediacore_media
             $query_params['sort'] = 'relevance';
         }
 
-        $api_url = $this->_mcore_client->get_api2_url($this->_links_self);
+        $api_url = $this->_mcore_client->get_api2_url('/media');
 
         if ($this->_mcore_client->has_lti_config() && $course_id) {
             $authtkt_str = $this->_mcore_client->get_auth_cookie($course_id);
@@ -102,7 +101,6 @@ class mediacore_media
         }
         $result = json_decode($result);
         $this->_curr_pg = (int)$page;
-        $this->_links_self = $result->links->self;
         $this->_items = new mediacore_media_rowset(
             $this->_mcore_client, $result->items
         );
