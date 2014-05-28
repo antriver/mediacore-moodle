@@ -69,6 +69,7 @@ class mediacore_client
 
     /**
      * The mediacore_config object
+     *
      * @return mediacore_config
      */
     public function get_config() {
@@ -77,6 +78,7 @@ class mediacore_client
 
     /**
      * Get the mediacore site url scheme
+     *
      * @return string|boolean
      */
     public function get_scheme() {
@@ -86,6 +88,7 @@ class mediacore_client
     /**
      * Get the mediacore site host
      * w/o the port
+     *
      * @return string
      */
     public function get_host() {
@@ -94,6 +97,7 @@ class mediacore_client
 
     /**
      * Get the mediacore site port
+     *
      * @return string|boolean
      */
     public function get_port() {
@@ -102,6 +106,7 @@ class mediacore_client
 
     /**
      * Get the mediacore site url host and port
+     *
      * @return string
      */
     public function get_host_and_port() {
@@ -114,6 +119,7 @@ class mediacore_client
 
     /**
      * Get the mediacore site base url
+     *
      * @return string
      */
     public function get_baseurl() {
@@ -123,6 +129,7 @@ class mediacore_client
 
     /**
      * Get the moodle webroot
+     *
      * @return string
      */
     public function get_webroot() {
@@ -131,6 +138,7 @@ class mediacore_client
 
     /**
      * Get the chooser js url
+     *
      * @return string
      */
     public function get_chooser_js_url() {
@@ -139,6 +147,7 @@ class mediacore_client
 
     /**
      * Get the chooser url
+     *
      * @return string
      */
     public function get_chooser_url() {
@@ -147,6 +156,7 @@ class mediacore_client
 
     /**
      * Sign and return the LTI-signed chooser endpoint
+     *
      * @param string|int $courseid
      * @return string
      */
@@ -159,6 +169,7 @@ class mediacore_client
     /**
      * Get an api2 constructed path from a supplied api2 path
      * segment and optional query parameters
+     *
      * @param $path string
      * @param $query_params array
      * @return string
@@ -176,6 +187,8 @@ class mediacore_client
 
     /**
      * Get the url to the authtkt api endpoint
+     *
+     * @return string
      */
     public function get_authtkt_url() {
         return $this->get_baseurl() . $this->_authtkt_path;
@@ -183,6 +196,7 @@ class mediacore_client
 
     /**
      * Whether the config is setup for lti
+     *
      * @return boolean
      */
     public function has_lti_config() {
@@ -192,6 +206,7 @@ class mediacore_client
     /**
      * Get the signed lti parameters
      * uses Oauth-1x
+     *
      * @param string $endpoint
      * @param int $courseid
      * @param array $params
@@ -220,6 +235,7 @@ class mediacore_client
 
     /**
      * Get the base lti request params
+     *
      * @param int $courseid
      * @return array
      */
@@ -259,6 +275,7 @@ class mediacore_client
 
     /**
      * Get a curl response as JSON
+     *
      * @param string $url
      * @param array $params
      * @param string $opt_cookie_str
@@ -300,6 +317,7 @@ class mediacore_client
     /**
      * Get the cookie string from the response header of
      * the authtkt api endpoint using lti
+     *
      * @param int $courseid
      * @return string
      */
@@ -342,6 +360,7 @@ class mediacore_client
 
     /**
      * Urlencode the parameter values as a query string
+     *
      * @param array $params
      * @return string
      */
@@ -355,6 +374,7 @@ class mediacore_client
 
     /**
      * Get the custom tinymce params
+     *
      * @return array
      */
     public function get_tinymce_params() {
@@ -378,6 +398,7 @@ class mediacore_client
     /**
      * Method for hooking into the Moodle 2.3 Tinymce plugin lib.php
      * file
+     *
      * @param array $filters
      * @param array $params
      * @return array
@@ -405,6 +426,7 @@ class mediacore_client
     /**
      * Get the embed html by parsing the api1 view url for its slug
      * e.g. https://demo.mediacore.tv/media/{slug}?context_id=2
+     *
      * @param string $url
      * @return string $id
      */
@@ -419,6 +441,7 @@ class mediacore_client
     /**
      * Get the embed html by parsing the api2 view url for its id
      * e.g. http://demo.mediacore.tv/media/{id}/view
+     *
      * @param string $url
      * @return string $id
      */
@@ -432,6 +455,7 @@ class mediacore_client
 
     /**
      * Get the media embed html LTI signed if applicable
+     *
      * @param string $url
      * @param int $width
      * @param int $height
