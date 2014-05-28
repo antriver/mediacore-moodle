@@ -60,12 +60,13 @@ class mediacore_media
     /**
      * Fetch media from the media api endpoint url
      * LTI signed if applicable
+     *
      * @param int $curr_pg
      * @param string $search
      * @param int|null $course_id
      * @return mediacore_media_rowset
      */
-    public function get_media($search='', $page=1, $course_id=null) {
+    public function get_media($search='', $page=1, $per_page=30, $course_id=null) {
 
         $this->_search = urlencode($search);
 
@@ -73,6 +74,7 @@ class mediacore_media
             'type' => 'video',
             'status' => 'published',
             'joins' => 'thumbs',
+            'per_page' => $per_page,
         );
 
         if (!is_null($course_id)) {
@@ -101,14 +103,59 @@ class mediacore_media
         $result = json_decode($result);
         $this->_curr_pg = (int)$page;
         $this->_links_self = $result->links->self;
-        $this->_items = new mediacore_media_rowset($this->_mcore_client,
-            $result->items);
+        $this->_items = new mediacore_media_rowset(
+            $this->_mcore_client, $result->items
+        );
 
         return $this->_items;
     }
 
     /**
+     * Get the total media count
+     *
+     * @param string $search
+     * @param int $course_id
+     * @return int
+     */
+    public function get_media_count($search, $course_id) {
+
+        $this->_search = urlencode($search);
+
+        $query_params = array(
+            'type' => 'video',
+            'status' => 'published',
+        );
+
+        if (!is_null($course_id)) {
+            $query_params['context_id'] = $course_id;
+        }
+        if (!empty($this->_search)) {
+            $query_params['search'] = $this->_search;
+        }
+
+        // load all the media thumbs. no pagination
+        $api_url = $this->_mcore_client->get_api2_url('/media/count');
+
+        if ($this->_mcore_client->has_lti_config() && $course_id) {
+            $authtkt_str = $this->_mcore_client->get_auth_cookie($course_id);
+            $result = $this->_mcore_client->get_curl_response(
+                $api_url, $query_params, $authtkt_str
+            );
+        } else {
+            $result = $this->_mcore_client->get_curl_response(
+                $api_url, $query_params
+            );
+        }
+        if (empty($result)) {
+            return $result;
+        }
+        $result = json_decode($result);
+        return $result->count;
+    }
+
+    /**
      * Get the current media rowset page number
+     *
      * @return int
      */
     public function get_current_page() {
