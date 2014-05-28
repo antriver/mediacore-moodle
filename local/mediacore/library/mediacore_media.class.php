@@ -61,8 +61,9 @@ class mediacore_media
      * Fetch media from the media api endpoint url
      * LTI signed if applicable
      *
-     * @param int $curr_pg
      * @param string $search
+     * @param int $page
+     * @param int $per_page
      * @param int|null $course_id
      * @return mediacore_media_rowset
      */
