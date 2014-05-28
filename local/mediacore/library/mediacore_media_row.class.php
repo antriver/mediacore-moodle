@@ -148,7 +148,7 @@ class mediacore_media_row
      * @return string
      */
     public function get_source() {
-        return $this->_mcore_client->get_baseurl() .
+        return $this->_mcore_client->get_siteurl() .
             $this->get_view_url() . '#' . $this->get_title();
     }
 
@@ -159,7 +159,7 @@ class mediacore_media_row
     public function get_thumbnail_url() {
         $thumb_url = $this->_data->joins->thumbs->sizes->s_4x3;
         if (strpos($thumb_url, 'http') === false) {
-            return $this->_mcore_client->get_baseurl() .
+            return $this->_mcore_client->get_siteurl() .
                 $thumb_url;
         }
         return $thumb_url;

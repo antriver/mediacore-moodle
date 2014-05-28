@@ -123,7 +123,7 @@ class mediacore_client
      *
      * @return string
      */
-    public function get_baseurl() {
+    public function get_siteurl() {
         return $this->get_scheme() .
             '://' . $this->get_host_and_port();
     }
@@ -143,7 +143,7 @@ class mediacore_client
      * @return string
      */
     public function get_chooser_js_url() {
-        return $this->get_baseurl() . $this->_chooser_js_path;
+        return $this->get_siteurl() . $this->_chooser_js_path;
     }
 
     /**
@@ -152,7 +152,7 @@ class mediacore_client
      * @return string
      */
     public function get_chooser_url() {
-        return  $this->get_baseurl() . $this->_chooser_path;
+        return  $this->get_siteurl() . $this->_chooser_path;
     }
 
     /**
