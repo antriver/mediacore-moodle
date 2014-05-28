@@ -51,6 +51,7 @@ class mediacore_media
 
     /**
      * Constructor
+     *
      * @param mediacore_client $client
      */
     public function __construct($client) {
@@ -86,16 +87,17 @@ class mediacore_media
         }
 
         // load all the media thumbs. no pagination
-        // TODO add pagination
         $api_url = $this->_mcore_client->get_api2_url($this->_links_self);
 
         if ($this->_mcore_client->has_lti_config() && $course_id) {
             $authtkt_str = $this->_mcore_client->get_auth_cookie($course_id);
-            $result = $this->_mcore_client->get_curl_response($api_url,
-                $query_params, $authtkt_str);
+            $result = $this->_mcore_client->get_curl_response(
+                $api_url, $query_params, $authtkt_str
+            );
         } else {
-            $result = $this->_mcore_client->get_curl_response($api_url,
-                $query_params);
+            $result = $this->_mcore_client->get_curl_response(
+                $api_url, $query_params
+            );
         }
         if (empty($result)) {
             return $result;
@@ -164,6 +166,7 @@ class mediacore_media
 
     /**
      * Get the current media rowset page number
+     *
      * @return int
      */
     public function get_current_page_str() {
