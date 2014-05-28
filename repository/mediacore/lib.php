@@ -98,7 +98,7 @@ class repository_mediacore extends repository
             $page = 1;
         }
 
-        $media_results = $this->_get_media($search_text, $ret['page']);
+        $media_results = $this->_get_media($search_text, $page);
 
         $ret  = array();
         $ret['list'] = $media_results['files'];
