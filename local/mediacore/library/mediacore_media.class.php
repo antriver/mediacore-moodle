@@ -47,7 +47,6 @@ class mediacore_media
     private $_curr_pg = 1;
     private $_links_self = '/media';
     private $_mcore_client;
-    private $_search;
 
     /**
      * Constructor
@@ -69,8 +68,6 @@ class mediacore_media
      */
     public function get_media($search='', $page=1, $per_page=30, $course_id=null) {
 
-        $this->_search = urlencode($search);
-
         $query_params = array(
             'type' => 'video',
             'status' => 'published',
@@ -82,8 +79,8 @@ class mediacore_media
         if (!is_null($course_id)) {
             $query_params['context_id'] = $course_id;
         }
-        if (!empty($this->_search)) {
-            $query_params['search'] = $this->_search;
+        if (!empty($search)) {
+            $query_params['search'] = urlencode($search);
             $query_params['sort'] = 'relevance';
         }
 
@@ -122,8 +119,6 @@ class mediacore_media
      */
     public function get_media_count($search, $course_id) {
 
-        $this->_search = urlencode($search);
-
         $query_params = array(
             'type' => 'video',
             'status' => 'published',
@@ -132,8 +127,8 @@ class mediacore_media
         if (!is_null($course_id)) {
             $query_params['context_id'] = $course_id;
         }
-        if (!empty($this->_search)) {
-            $query_params['search'] = $this->_search;
+        if (!empty($search)) {
+            $query_params['search'] = urlencode($search);
         }
 
         // load all the media thumbs. no pagination
