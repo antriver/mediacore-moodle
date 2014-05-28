@@ -77,7 +77,7 @@ class repository_mediacore extends repository
      * @param string $search_text
      * @return array
      */
-    public function search($search_text, $page = 0) {
+    public function search($search_text, $page=1) {
         global $SESSION, $COURSE;
         $sess_keyword = 'mediacore_'.$this->id.'_keyword';
 
