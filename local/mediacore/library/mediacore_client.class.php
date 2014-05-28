@@ -46,8 +46,6 @@ require_once 'mediacore_config.class.php';
 class mediacore_client
 {
     private $_config;
-    private $_api2_root_path = '/api2';
-    private $_authtkt_path = '/api2/lti/authtkt';
     private $_chooser_js_path = '/api/chooser.js';
     private $_chooser_path = '/chooser';
     private $_uri;
@@ -163,36 +161,25 @@ class mediacore_client
      */
     public function get_signed_chooser_url($courseid, $lti_params) {
         $url = $this->get_chooser_url();
-        return $url . '?' . $this->url_encode_query_params(
-            $this->get_signed_lti_params($url, 'GET', $courseid, $lti_params));
+        return $url . '?' . $this->get_query(
+            $this->get_signed_lti_params($url, 'GET', $courseid, $lti_params)
+        );
     }
 
     /**
      * Get an api2 constructed path from a supplied api2 path
      * segment and optional query parameters
      *
-     * @param $path string
-     * @param $query_params array
+     * TODO
      * @return string
      */
-    public function get_api2_url($path='', $query_params=array()) {
-        $url = $this->get_baseurl() . $this->_api2_root_path;
-        if (!empty($path)) {
-            $url .= $path;
+    public function get_url() {
+        $args = func_get_args();
+        $url = $this->get_siteurl() . '/api2/';
+        if (!empty($args)) {
+            $url .= implode('/', $args);
         }
-        if (is_array($query_params) && !empty($query_params)) {
-            $url .= '?' . $this->url_encode_query_params($query_params);
-        }
-        return rtrim($url, '&');
-    }
-
-    /**
-     * Get the url to the authtkt api endpoint
-     *
-     * @return string
-     */
-    public function get_authtkt_url() {
-        return $this->get_baseurl() . $this->_authtkt_path;
+        return $url;
     }
 
     /**
@@ -213,8 +200,9 @@ class mediacore_client
      * @param array $params
      * @return array
      */
-    public function get_signed_lti_params($endpoint, $method='GET', $courseid,
-            $params=array()) {
+    public function get_signed_lti_params($endpoint, $method='GET',
+        $courseid=null, $params=array()) {
+
         global $DB;
 
         if (empty($courseid)) {
@@ -275,38 +263,88 @@ class mediacore_client
     }
 
     /**
-     * Get a curl response as JSON
+     * Urlencode the query params values
+     *
+     * @param string $params
+     */
+    public function get_query($params) {
+        $encoded_params = '';
+        foreach ($params as $k => $v) {
+            $encoded_params .= "$k=" . urlencode($v) . "&";
+        }
+        return substr($encoded_params, 0, -1);
+    }
+
+
+    /**
+     * Send a GET curl request
      *
      * @param string $url
-     * @param array $params
-     * @param string $opt_cookie_str
-     * @return object|false
+     * @param array $options
+     * @param array $headers
+     * @return mixed
      */
-    public function get_curl_response($url, $query_params,
-            $opt_cookie_str) {
+    public function get($url, $options=array(), $headers=array()) {
+        return $this->_send($url, 'GET', null, $options, $headers);
+    }
+
+    /**
+     * Send a POST curl request
+     *
+     * @param string $url
+     * @param array $data
+     * @param array $options
+     * @param array $headers
+     * @return mixed
+     */
+    public function post($url, $data, $options=array(), $headers=array()) {
+        return $this->_send($url, 'POST', $data, $options, $headers);
+    }
+
+    /**
+     * Get a curl response
+     *
+     * @param string $url
+     * @param string $url
+     * @param string $method
+     * @param array $data
+     * @param array $options
+     * @param array $headers
+     * @return string|boolean
+     */
+    private function _send($url, $method='GET', $data=null, $options=array(),
+        $headers=array()) {
+
         global $CFG;
 
-        $url .= (strpos($url, '?') === false ? '?' : '&') .
-            $this->url_encode_query_params($query_params);
-
-        $options = array(
+        // Set the curl options
+        $default_options = array(
             CURLOPT_HEADER => false,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 4,
             CURLOPT_URL => $url,
         );
-
-        //build headers
-        $headers = array();
-        if (!empty($opt_cookie_str)) {
-            array_push($headers, 'Cookie: ' . $opt_cookie_str);
-        }
-        array_push($headers, 'Content-Type: application/json');
-        $options[CURLOPT_HTTPHEADER] = $headers;
-
         if ((boolean)$CFG->debugdisplay) {
-            $options[CURLOPT_SSL_VERIFYPEER] = false;
+            $default_options[CURLOPT_SSL_VERIFYHOST] = false;
+            $default_options[CURLOPT_SSL_VERIFYPEER] = false;
         }
+        $options = array_replace($default_options, (array)$options);
+
+        // Set POST request opts if necessary
+        $options[CURLOPT_POST] = false;
+        unset($options[CURLOPT_POSTFIELDS]);
+        if ($method == 'POST' && !empty($data)) {
+            $options[CURLOPT_POST] = true;
+            $options[CURLOPT_POSTFIELDS] = $data;
+        }
+
+        // Build the curl headers
+        // Disallow passing headers in the options arg
+        unset($options[CURLOPT_HTTPHEADER]);
+        if (!empty($headers)) {
+            $options[CURLOPT_HTTPHEADER] = (array)$headers;
+        }
+
         $ch = curl_init();
         curl_setopt_array($ch, $options);
         $result = curl_exec($ch);
@@ -325,52 +363,25 @@ class mediacore_client
     public function get_auth_cookie($courseid) {
         global $CFG;
 
-        $authtkt_url = $this->get_authtkt_url();
+        $authtkt_url = $this->get_url('lti', 'authtkt');
         $signed_lti_params = $this->get_signed_lti_params(
             $authtkt_url, 'POST', $courseid);
 
         $options = array(
-            CURLOPT_POST => true,
             CURLOPT_HEADER => true,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 4,
-            CURLOPT_URL => $authtkt_url,
-            CURLOPT_POSTFIELDS =>
-            $this->url_encode_query_params($signed_lti_params),
-            );
+        );
+        $result = $this->_send($authtkt_url, 'POST', $signed_lti_params, $options);
 
-        if ((boolean)$CFG->debugdisplay) {
-            $options[CURLOPT_SSL_VERIFYPEER] = false;
-        }
-        $ch = curl_init();
-        curl_setopt_array($ch, $options);
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        if (!$result) { // curl failed.
+        if (empty($result)) {
             return $result;
         }
         // parse the cookie from the header
-        $arr = array();
+        $cookie_str = '';
         preg_match('/^Set-Cookie:\s*([^;]*)/mi', $result, $matches);
         if (isset($matches[1])) {
-            return rtrim($matches[1]);
+            $cookie_str = rtrim($matches[1]);
         }
-        return '';
-    }
-
-    /**
-     * Urlencode the parameter values as a query string
-     *
-     * @param array $params
-     * @return string
-     */
-    public function url_encode_query_params($params) {
-        $encoded_params = '';
-        foreach ($params as $k => $v) {
-            $encoded_params .= "$k=" . urlencode($v) . "&";
-        }
-        return substr($encoded_params, 0, -1);
+        return $cookie_str;
     }
 
     /**
@@ -427,73 +438,4 @@ class mediacore_client
         return $params;
     }
 
-    /**
-     * Get the embed html by parsing the api1 view url for its slug
-     * e.g. https://demo.mediacore.tv/media/{slug}?context_id=2
-     *
-     * @param string $url
-     * @return string $id
-     */
-    public function get_embed_html_from_api1_view_url($url, $width, $height,
-            $courseid=null) {
-        $patharr = explode('/', parse_url($url, PHP_URL_PATH));
-        $slug = end($patharr);
-        $api2_url = $this->get_api2_url('/media/slug:' . $slug);
-        return $this->_get_embed_html($api2_url, $width, $height, $courseid);
-    }
-
-    /**
-     * Get the embed html by parsing the api2 view url for its id
-     * e.g. http://demo.mediacore.tv/media/{id}/view
-     *
-     * @param string $url
-     * @return string $id
-     */
-    public function get_embed_html_from_api2_view_url($url, $width, $height,
-        $courseid=null) {
-        $patharr = explode('/', parse_url($url, PHP_URL_PATH));
-        $id = $patharr[count($patharr) - 2];
-        $api2_url = $this->get_api2_url('/media/' . $id);
-        return $this->_get_embed_html($api2_url, $width, $height, $courseid);
-    }
-
-    /**
-     * Get the media embed html LTI signed if applicable
-     *
-     * @param string $url
-     * @param int $width
-     * @param int $height
-     * @param int|null $courseid
-     */
-    private function _get_embed_html($url, $width, $height, $courseid=null) {
-
-        $query_params = array(
-            'joins' => 'embedcode',
-        );
-        if (!is_null($courseid)) {
-            $query_params['context_id'] = $courseid;
-        }
-        if ($this->has_lti_config() && !is_null($courseid)) {
-            $authtkt_str = $this->get_auth_cookie($courseid);
-            $result = $this->get_curl_response($url, $query_params, $authtkt_str);
-        } else {
-            $result = $this->get_curl_response($url, $query_params);
-        }
-        if (empty($result)) {
-            return $result;
-        }
-        $result = json_decode($result);
-        $html = $result->joins->embedcode->html;
-
-        // replace the width and height with new values
-        $patterns = array(
-            '/width="([0-9]+)"/',
-            '/height="([0-9]+)"/'
-        );
-        $replace = array(
-            'width="' . $width . '"',
-            'height="' . $height . '"'
-        );
-        return preg_replace($patterns, $replace, $html);
-    }
 }

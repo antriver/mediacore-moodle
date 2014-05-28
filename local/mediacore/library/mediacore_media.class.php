@@ -44,7 +44,7 @@ require_once 'mediacore_media_rowset.class.php';
  */
 class mediacore_media
 {
-    private $_mcore_client;
+    private $_client;
 
     /**
      * Constructor
@@ -52,7 +52,7 @@ class mediacore_media
      * @param mediacore_client $client
      */
     public function __construct($client) {
-        $this->_mcore_client = $client;
+        $this->_client = $client;
     }
 
     /**
@@ -62,38 +62,40 @@ class mediacore_media
      * @param string $search
      * @param int $page
      * @param int $per_page
-     * @param int|null $course_id
+     * @param int|null $courseid
      * @return mediacore_media_rowset
      */
-    public function get_media($search='', $page=1, $per_page=30, $course_id=null) {
+    public function get_media($search='', $page=1, $per_page=30, $courseid=null) {
 
-        $query_params = array(
+        $params = array(
             'type' => 'video',
             'status' => 'published',
             'joins' => 'thumbs',
             'per_page' => $per_page,
             '_p' => $page,
         );
-
-        if (!is_null($course_id)) {
-            $query_params['context_id'] = $course_id;
+        if (!is_null($courseid)) {
+            $params['context_id'] = $courseid;
         }
         if (!empty($search)) {
-            $query_params['search'] = urlencode($search);
-            $query_params['sort'] = 'relevance';
+            $params['search'] = urlencode($search);
+            $params['sort'] = 'relevance';
         }
 
-        $api_url = $this->_mcore_client->get_api2_url('/media');
+        $api_url = $this->_client->get_url('media');
 
-        if ($this->_mcore_client->has_lti_config() && $course_id) {
-            $authtkt_str = $this->_mcore_client->get_auth_cookie($course_id);
-            $result = $this->_mcore_client->get_curl_response(
-                $api_url, $query_params, $authtkt_str
-            );
+        if ($this->_client->has_lti_config() && !is_null($courseid)) {
+            $options = array();
+            $authtkt_str = $this->_client->get_auth_cookie($courseid);
+            if (!empty($authtkt_str)) {
+                $options[CURLOPT_HTTPHEADER] = array(
+                    'Cookie: ' . $authtkt_str
+                );
+            }
+            $api_url .= '?' . $this->_client->get_query($params);
+            $result = $this->_client->get($api_url, $options);
         } else {
-            $result = $this->_mcore_client->get_curl_response(
-                $api_url, $query_params
-            );
+            $result = $this->_client->get($api_url);
         }
 
         $rowset = null;
@@ -102,7 +104,7 @@ class mediacore_media
         } else {
             $result = json_decode($result);
             $rowset = new mediacore_media_rowset(
-                $this->_mcore_client, $result->items
+                $this->_client, $result->items
             );
         }
         return $rowset;
@@ -112,34 +114,37 @@ class mediacore_media
      * Get the total media count
      *
      * @param string $search
-     * @param int $course_id
+     * @param int $courseid
      * @return int
      */
-    public function get_media_count($search, $course_id) {
+    public function get_media_count($search, $courseid=null) {
 
-        $query_params = array(
+        $params = array(
             'type' => 'video',
             'status' => 'published',
         );
 
-        if (!is_null($course_id)) {
-            $query_params['context_id'] = $course_id;
+        if (!is_null($courseid)) {
+            $params['context_id'] = $courseid;
         }
         if (!empty($search)) {
-            $query_params['search'] = urlencode($search);
+            $params['search'] = urlencode($search);
         }
 
-        $api_url = $this->_mcore_client->get_api2_url('/media/count');
+        $api_url = $this->_client->get_url('media', 'count');
 
-        if ($this->_mcore_client->has_lti_config() && $course_id) {
-            $authtkt_str = $this->_mcore_client->get_auth_cookie($course_id);
-            $result = $this->_mcore_client->get_curl_response(
-                $api_url, $query_params, $authtkt_str
-            );
+        if ($this->_client->has_lti_config() && !is_null($courseid)) {
+            $options = array();
+            $authtkt_str = $this->_client->get_auth_cookie($courseid);
+            if (!empty($authtkt_str)) {
+                $options[CURLOPT_HTTPHEADER] = array(
+                    'Cookie: ' . $authtkt_str
+                );
+            }
+            $api_url .= '?' . $this->_client->get_query($params);
+            $result = $this->_client->get($api_url, $options);
         } else {
-            $result = $this->_mcore_client->get_curl_response(
-                $api_url, $query_params
-            );
+            $result = $this->_client->get($api_url);
         }
 
         $count = 0;
@@ -149,6 +154,6 @@ class mediacore_media
             $result = json_decode($result);
             $count = $result->count;
         }
-        return $count;
+        return (int)$count;
     }
 }
