@@ -52,11 +52,14 @@ class tinymce_mediacore extends editor_tinymce_plugin
     protected function update_init_params(array &$params, context $context,
         array $options = null) {
 
-        // If mediacore filter is disabled, do not add button.
-        // Note: Test for "filter/mediacore" to remain compatible with Moodle < 2.5.
+        // 'mediacore' is the key used in Moodle >= 2.5
+        // 'filter/mediacore' is the key used in Moodle < 2.5
         $filters = filter_get_active_in_context($context);
-        if (!array_key_exists('mediacore', $filters)
-            && !array_key_exists('filter/mediacore', $filters)) {
+        $enabled  = array_key_exists('mediacore', $filters)
+                 || array_key_exists('filter/mediacore', $filters);
+
+        // If mediacore filter is disabled, do not add button.
+        if (!$enabled) {
             return;
         }
 
