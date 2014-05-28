@@ -51,6 +51,7 @@ require_once 'mediacore_media.class.php';
 
 class repository_mediacore extends repository
 {
+    const MEDIACORE_MEDIA_PER_PAGE = 30;
     private $_mcore_client;
     private $_mcore_media;
 
@@ -110,10 +111,11 @@ class repository_mediacore extends repository
         return $ret;
     }
 
-    private function _get_media($search_text, $page=1, $per_page=30) {
+    private function _get_media($search_text, $page=1) {
         global $COURSE;
         $cid = isset($COURSE->id) ? $COURSE->id : null;
-        $items = $this->_mcore_media->get_media($search_text, $page, $per_page, $cid);
+        $items = $this->_mcore_media->get_media($search_text, $page,
+            self::MEDIACORE_MEDIA_PER_PAGE, $cid);
 
         $files_array = array();
         $count = 0;
