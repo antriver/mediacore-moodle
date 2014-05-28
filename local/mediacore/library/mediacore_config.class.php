@@ -44,6 +44,13 @@ class mediacore_config
     private $_shared_secret;
     private $_version;
     private $_webroot;
+    private static $_stored_members = array(
+        // These members are populated from the DB
+        '_consumer_key',
+        '_host',
+        '_shared_secret',
+        '_version',
+    );
 
     /**
      * Constructor
@@ -56,18 +63,11 @@ class mediacore_config
         $records = $DB->get_records('config_plugins',
             array('plugin' => MEDIACORE_SETTINGS_NAME));
 
-        $expected_members = array(
-            '_consumer_key',
-            '_host',
-            '_shared_secret',
-            '_version',
-       );
-
         if (!empty($records)) {
             foreach ($records as $r) {
                 $member_name = '_' . $r->name;
 
-                if (in_array($member_name, $expected_members)) {
+                if (in_array($member_name, self::$_stored_members)) {
                     $value = $r->value;
 
                     if (!empty($value)) {
