@@ -40,6 +40,12 @@ require_once 'mediacore_client.class.php';
 /**
  * Plugin for MediaCore media
  *
+ * This module is used to configure the MediaCore button in TinyMCE for
+ * Moodle 2.4+
+ *
+ * Moodle 2.3 uses a different method to configure the plugin. See
+ * MediaCore plugin installation documentation for details.
+ *
  * @package tinymce_mediacore
  * @copyright 2012 MediaCore Technologies Inc
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

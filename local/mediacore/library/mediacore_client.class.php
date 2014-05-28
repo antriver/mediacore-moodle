@@ -400,6 +400,9 @@ class mediacore_client
      * Method for hooking into the Moodle 2.3 Tinymce plugin lib.php
      * file
      *
+     * Moodle 2.4+ uses different logic -- see MediaCore plugin
+     * installation instructions for details.
+     *
      * @param array $filters
      * @param array $params
      * @return array
