@@ -97,7 +97,9 @@ class mediacore_media
         }
 
         $rowset = null;
-        if (!empty($result)) {
+        if (empty($result)) {
+            // TODO: report an error?
+        } else {
             $result = json_decode($result);
             $media = new mediacore_media_rowset(
                 $this->_mcore_client, $result->items
@@ -139,10 +141,14 @@ class mediacore_media
                 $api_url, $query_params
             );
         }
+
+        $count = 0;
         if (empty($result)) {
-            return $result;
+            // TODO: report an error?
+        } else {
+            $result = json_decode($result);
+            $count = $result->count;
         }
-        $result = json_decode($result);
-        return $result->count;
+        return $count;
     }
 }
