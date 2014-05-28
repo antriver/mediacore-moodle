@@ -50,9 +50,8 @@ class mediacore_client
     private $_authtkt_path = '/api2/lti/authtkt';
     private $_chooser_js_path = '/api/chooser.js';
     private $_chooser_path = '/chooser';
-    private $_host;
-    private $_scheme = 'https';
     private $_uri;
+    private static $_scheme = 'https';
 
     /**
      * Constructor
@@ -61,9 +60,8 @@ class mediacore_client
         $this->_config = new mediacore_config();
 
         //config host can include a port
-        $this->_host = $this->_config->get_host();
         $this->_uri = Zend_Uri_Http::fromString(
-            $this->_scheme . '://' . $this->_host
+            self::$_scheme . '://' . $this->_config->get_host()
         );
     }
 
@@ -82,7 +80,7 @@ class mediacore_client
      * @return string|boolean
      */
     public function get_scheme() {
-        return $this->_scheme;
+        return self::$_scheme;
     }
 
     /**
