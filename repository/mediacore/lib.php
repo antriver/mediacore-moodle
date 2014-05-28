@@ -97,31 +97,43 @@ class repository_mediacore extends repository
             $page = 1;
         }
 
+        $media_results = $this->_get_media($search_text, $ret['page']);
+
         $ret  = array();
-        $ret['page'] = $page;
-        $ret['list'] = $this->_get_media($search_text, $ret['page']);
+        $ret['list'] = $media_results['files'];
         $ret['nologin'] = true;
         $ret['norefresh'] = true;
         $ret['nosearch'] = true;
+        $ret['page'] = $page;
+        $ret['pages'] = $media_results['pages'];
 
-        //TODO add pagination
-        $ret['pages'] = 1;
         return $ret;
     }
 
-    private function _get_media($search_text, $page=1) {
+    private function _get_media($search_text, $page=1, $per_page=30) {
         global $COURSE;
         $cid = isset($COURSE->id) ? $COURSE->id : null;
         $items = $this->_mcore_media->get_media($search_text, $page, $cid);
-        if (empty($items)) {
-            // TODO: Return that there was an issue connecting MediaCore.
-            return array();
-        }
+
         $files_array = array();
-        foreach ($items as $item) {
-            $files_array[] = $item->get_repository_file_array();
+        $count = 0;
+        $pages = 0;
+
+        if (!empty($items)) {
+            foreach ($items as $item) {
+                $files_array[] = $item->get_repository_file_array();
+            }
+            $count = $this->_mcore_media->get_media_count($search_text, $cid);
+            $pages = ceil($count/$per_page);
+        } else {
+            // TODO: Return that there was an issue connecting MediaCore.
         }
-        return $files_array;
+
+        return array(
+            'files' => $files_array,
+            'count' => $count,
+            'pages' => $pages
+        );
     }
 
 
