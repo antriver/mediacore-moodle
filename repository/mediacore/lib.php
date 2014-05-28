@@ -126,7 +126,7 @@ class repository_mediacore extends repository
                 $files_array[] = $item->get_repository_file_array();
             }
             $count = $this->_mcore_media->get_media_count($search_text, $cid);
-            $pages = ceil($count/$per_page);
+            $pages = ceil($count/self::MEDIACORE_MEDIA_PER_PAGE);
         } else {
             // TODO: Return that there was an issue connecting MediaCore.
         }
