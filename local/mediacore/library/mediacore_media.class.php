@@ -44,7 +44,6 @@ require_once 'mediacore_media_rowset.class.php';
  */
 class mediacore_media
 {
-    private $_curr_pg = 1;
     private $_mcore_client;
 
     /**
@@ -96,16 +95,15 @@ class mediacore_media
                 $api_url, $query_params
             );
         }
-        if (empty($result)) {
-            return $result;
-        }
-        $result = json_decode($result);
-        $this->_curr_pg = (int)$page;
-        $this->_items = new mediacore_media_rowset(
-            $this->_mcore_client, $result->items
-        );
 
-        return $this->_items;
+        $rowset = null;
+        if (!empty($result)) {
+            $result = json_decode($result);
+            $media = new mediacore_media_rowset(
+                $this->_mcore_client, $result->items
+            );
+        }
+        return $rowset;
     }
 
     /**
@@ -146,23 +144,5 @@ class mediacore_media
         }
         $result = json_decode($result);
         return $result->count;
-    }
-
-    /**
-     * Get the current media rowset page number
-     *
-     * @return int
-     */
-    public function get_current_page() {
-        return $this->_curr_pg;
-    }
-
-    /**
-     * Get the current media rowset page number
-     *
-     * @return int
-     */
-    public function get_current_page_str() {
-        return '' . $this->_curr_pg;
     }
 }
