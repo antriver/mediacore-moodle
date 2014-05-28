@@ -85,7 +85,6 @@ class mediacore_media
             $query_params['sort'] = 'relevance';
         }
 
-        // load all the media thumbs. no pagination
         $api_url = $this->_mcore_client->get_api2_url($this->_links_self);
 
         if ($this->_mcore_client->has_lti_config() && $course_id) {
@@ -132,7 +131,6 @@ class mediacore_media
             $query_params['search'] = urlencode($search);
         }
 
-        // load all the media thumbs. no pagination
         $api_url = $this->_mcore_client->get_api2_url('/media/count');
 
         if ($this->_mcore_client->has_lti_config() && $course_id) {
