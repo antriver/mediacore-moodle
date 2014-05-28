@@ -56,11 +56,25 @@ class mediacore_config
         $records = $DB->get_records('config_plugins',
             array('plugin' => MEDIACORE_SETTINGS_NAME));
 
+        $expected_members = array(
+            '_consumer_key',
+            '_host',
+            '_shared_secret',
+            '_version',
+       );
+
         if (!empty($records)) {
             foreach ($records as $r) {
-                if (!empty($r->value)) {
-                    $var = '_' . $r->name;
-                    $this->{$var} = $r->value;
+                $member_name = '_' . $r->name;
+
+                if (in_array($member_name, $expected_members)) {
+                    $value = $r->value;
+
+                    if (!empty($value)) {
+                        $this->{$member_name} = $value;
+                    }
+                } else {
+                    // TODO: Report unexpected key found in config?
                 }
             }
         }
