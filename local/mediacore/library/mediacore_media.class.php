@@ -76,6 +76,7 @@ class mediacore_media
             'status' => 'published',
             'joins' => 'thumbs',
             'per_page' => $per_page,
+            '_p' => $page,
         );
 
         if (!is_null($course_id)) {
