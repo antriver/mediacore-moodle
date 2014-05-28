@@ -62,13 +62,15 @@ class tinymce_mediacore extends editor_tinymce_plugin
 
         $mcore_client = new mediacore_client();
         $params = $params + $mcore_client->get_tinymce_params();
+        $image_row = $this->find_image_button($params)
+        $last_row = $this->count_button_rows($params);
 
-        // Add button after images button.
-        if ($row = $this->find_image_button($params)) {
-            $this->add_button_after($params, $row, 'mediacore', 'image');
+        if ($image_row) {
+            // If there is an 'image' button, add the 'mediacore' button after it
+            $this->add_button_after($params, $image_row, 'mediacore', 'image');
         } else {
-            // If 'image' is not found, add button in the end of the last row.
-            $this->add_button_after($params, $this->count_button_rows($params), 'mediacore');
+            // Otherwise, just append the 'mediacore' button to the last row
+            $this->add_button_after($params, $last_row, 'mediacore');
         }
 
         // Add JS file, which uses default name.
