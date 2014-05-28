@@ -101,7 +101,7 @@ class mediacore_media
             // TODO: report an error?
         } else {
             $result = json_decode($result);
-            $media = new mediacore_media_rowset(
+            $rowset = new mediacore_media_rowset(
                 $this->_mcore_client, $result->items
             );
         }
