@@ -45,9 +45,9 @@ require_once 'mediacore_config.class.php';
  */
 class mediacore_client
 {
-    private $_config;
     private $_chooser_js_path = '/api/chooser.js';
     private $_chooser_path = '/chooser';
+    private $_config;
     private $_uri;
     private static $_scheme = 'https';
 
@@ -127,49 +127,8 @@ class mediacore_client
     }
 
     /**
-     * Get the moodle webroot
-     *
-     * @return string
-     */
-    public function get_webroot() {
-        return $this->_config->get_webroot();
-    }
-
-    /**
-     * Get the chooser js url
-     *
-     * @return string
-     */
-    public function get_chooser_js_url() {
-        return $this->get_siteurl() . $this->_chooser_js_path;
-    }
-
-    /**
-     * Get the chooser url
-     *
-     * @return string
-     */
-    public function get_chooser_url() {
-        return  $this->get_siteurl() . $this->_chooser_path;
-    }
-
-    /**
-     * Sign and return the LTI-signed chooser endpoint
-     *
-     * @param string|int $courseid
-     * @param array $lti_params
-     * @return string
-     */
-    public function get_signed_chooser_url($courseid, $lti_params) {
-        $url = $this->get_chooser_url();
-        return $url . '?' . $this->get_query(
-            $this->get_signed_lti_params($url, 'GET', $courseid, $lti_params)
-        );
-    }
-
-    /**
-     * Get an api2 constructed path from a supplied api2 path
-     * segment and optional query parameters
+     * Get an api2 constructed path from supplied api2
+     * path segments
      *
      * @param string ...
      * @return string
@@ -181,87 +140,6 @@ class mediacore_client
             $url .= implode('/', $args);
         }
         return $url;
-    }
-
-    /**
-     * Whether the config is setup for lti
-     *
-     * @return boolean
-     */
-    public function has_lti_config() {
-        return $this->_config->has_lti_config();
-    }
-
-    /**
-     * Get the signed lti parameters
-     * uses Oauth-1x
-     *
-     * @param string $endpoint
-     * @param string $method
-     * @param int $courseid
-     * @param array $params
-     * @return array
-     */
-    public function get_signed_lti_params($endpoint, $method='GET',
-        $courseid=null, $params=array()) {
-
-        global $DB;
-
-        if (empty($courseid)) {
-            throw new Zend_Exception(get_string('no_course_id',
-                MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
-        }
-        if (!$this->_config->has_lti_config()) {
-            throw new Zend_Exception(get_string('no_lti_config',
-                MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
-        }
-        $course = $DB->get_record('course', array('id' => (int)$courseid), '*',
-            MUST_EXIST);
-        $key = $this->_config->get_consumer_key();
-        $secret = $this->_config->get_shared_secret();
-        $query_params = $this->get_lti_params($course);
-        return lti_sign_parameters(array_merge($query_params, $params), $endpoint,
-            $method, $key, $secret);
-    }
-
-    /**
-     * Get the base lti request params
-     *
-     * @param object $course
-     * @return array
-     */
-    public function get_lti_params($course) {
-        global $USER, $CFG;
-
-        $user_given = (isset($USER->firstname)) ? $USER->firstname : '';
-        $user_family = (isset($USER->lastname)) ? $USER->lastname : '';
-        $user_full = trim($user_given . ' ' . $user_family);
-        $user_email = (isset($USER->email)) ? $USER->email: '';
-
-        $params = array(
-            'context_id' => $course->id,
-            'context_label' => $course->shortname,
-            'context_title' => $course->fullname,
-            'ext_lms' => 'moodle-2',
-            'lis_person_name_family' => $user_family,
-            'lis_person_name_full' => $user_full,
-            'lis_person_name_given' => $user_given,
-            'lis_person_contact_email_primary' => $user_email,
-            'lti_message_type' => 'basic-lti-launch-request',
-            'lti_version' => 'LTI-1p0',
-            'roles' => lti_get_ims_role($USER, 0, $course->id),
-            'tool_consumer_info_product_family_code' => 'moodle',
-            'tool_consumer_info_version' => (string)$CFG->version,
-            'user_id' => $USER->id,
-            'custom_context_id' => $course->idnumber,
-            'custom_plugin_info' => $this->_config->get_plugin_info(),
-        );
-
-        // Add debug flag for local testing.
-        if ((boolean)$CFG->debugdisplay) {
-            $params['debug'] = 'true';
-        }
-        return $params;
     }
 
     /**
@@ -277,7 +155,6 @@ class mediacore_client
         }
         return substr($encoded_params, 0, -1);
     }
-
 
     /**
      * Send a GET curl request
@@ -305,7 +182,7 @@ class mediacore_client
     }
 
     /**
-     * Get a curl response
+     * Send a curl GET or POST request
      *
      * @param string $url
      * @param string $method
@@ -387,6 +264,128 @@ class mediacore_client
     }
 
     /**
+     * Get the chooser js url
+     *
+     * @return string
+     */
+    public function get_chooser_js_url() {
+        return $this->get_siteurl() . $this->_chooser_js_path;
+    }
+
+    /**
+     * Get the chooser url
+     *
+     * @return string
+     */
+    public function get_chooser_url() {
+        return  $this->get_siteurl() . $this->_chooser_path;
+    }
+
+    /**
+     * Sign and return the LTI-signed chooser endpoint
+     *
+     * @param string|int $courseid
+     * @param array $lti_params
+     * @return string
+     */
+    public function get_signed_chooser_url($courseid, $lti_params) {
+        $url = $this->get_chooser_url();
+        return $url . '?' . $this->get_query(
+            $this->get_signed_lti_params($url, 'GET', $courseid, $lti_params)
+        );
+    }
+
+    /**
+     * Get the moodle webroot
+     *
+     * @return string
+     */
+    public function get_webroot() {
+        return $this->_config->get_webroot();
+    }
+
+    /**
+     * Get the base lti request params
+     *
+     * @param object $course
+     * @return array
+     */
+    public function get_lti_params($course) {
+        global $USER, $CFG;
+
+        $user_given = (isset($USER->firstname)) ? $USER->firstname : '';
+        $user_family = (isset($USER->lastname)) ? $USER->lastname : '';
+        $user_full = trim($user_given . ' ' . $user_family);
+        $user_email = (isset($USER->email)) ? $USER->email: '';
+
+        $params = array(
+            'context_id' => $course->id,
+            'context_label' => $course->shortname,
+            'context_title' => $course->fullname,
+            'ext_lms' => 'moodle-2',
+            'lis_person_name_family' => $user_family,
+            'lis_person_name_full' => $user_full,
+            'lis_person_name_given' => $user_given,
+            'lis_person_contact_email_primary' => $user_email,
+            'lti_message_type' => 'basic-lti-launch-request',
+            'lti_version' => 'LTI-1p0',
+            'roles' => lti_get_ims_role($USER, 0, $course->id),
+            'tool_consumer_info_product_family_code' => 'moodle',
+            'tool_consumer_info_version' => (string)$CFG->version,
+            'user_id' => $USER->id,
+            'custom_context_id' => $course->idnumber,
+            'custom_plugin_info' => $this->_config->get_plugin_info(),
+        );
+
+        // Add debug flag for local testing.
+        if ((boolean)$CFG->debugdisplay) {
+            $params['debug'] = 'true';
+        }
+        return $params;
+    }
+
+    /**
+     * Get the signed lti parameters
+     * uses Oauth-1x
+     *
+     * @param string $endpoint
+     * @param string $method
+     * @param int $courseid
+     * @param array $params
+     * @return array
+     */
+    public function get_signed_lti_params($endpoint, $method='GET',
+        $courseid=null, $params=array()) {
+
+        global $DB;
+
+        if (empty($courseid)) {
+            throw new Zend_Exception(get_string('no_course_id',
+                MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
+        }
+        if (!$this->_config->has_lti_config()) {
+            throw new Zend_Exception(get_string('no_lti_config',
+                MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
+        }
+        $course = $DB->get_record('course', array('id' => (int)$courseid), '*',
+            MUST_EXIST);
+        $key = $this->_config->get_consumer_key();
+        $secret = $this->_config->get_shared_secret();
+        $query_params = $this->get_lti_params($course);
+        return lti_sign_parameters(array_merge($query_params, $params), $endpoint,
+            $method, $key, $secret);
+    }
+
+    /**
+     * Whether the config is setup for lti
+     *
+     * @return boolean
+     */
+    public function has_lti_config() {
+        return $this->_config->has_lti_config();
+    }
+
+    /**
      * Get the custom tinymce params
      *
      * @return array
@@ -439,5 +438,4 @@ class mediacore_client
         }
         return $params;
     }
-
 }
