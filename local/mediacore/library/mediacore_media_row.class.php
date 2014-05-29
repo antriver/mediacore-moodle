@@ -49,6 +49,7 @@ class mediacore_media_row
 
     /**
      * Constructor
+     *
      * @param mediacore_client $client
      * @param object $media
      */
@@ -59,6 +60,7 @@ class mediacore_media_row
 
     /**
      * Get the media object
+     *
      * @return object
      */
     public function get_data() {
@@ -67,6 +69,7 @@ class mediacore_media_row
 
     /**
      * Get the author
+     *
      * @return string
      */
     public function get_author() {
@@ -79,6 +82,7 @@ class mediacore_media_row
 
     /**
      * Get the date created
+     *
      * @return string
      */
     public function get_datecreated() {
@@ -87,6 +91,7 @@ class mediacore_media_row
 
     /**
      * Get the date modified
+     *
      * @return string
      */
     public function get_datemodified() {
@@ -96,6 +101,7 @@ class mediacore_media_row
 
     /**
      * Get the media id
+     *
      * @return int
      */
     public function get_id() {
@@ -104,6 +110,7 @@ class mediacore_media_row
 
     /**
      * Get the media mimetype
+     *
      * Uses a built-in moodle mimetype helper
      * @return string
      */
@@ -115,11 +122,12 @@ class mediacore_media_row
                 return $mimetypes[$container]['type'];
             }
         }
-        return '/video/x-ms-wm';
+        return 'video/mp4';
     }
 
     /**
      * Get the media shorttitle
+     *
      * @return string
      */
     public function get_shorttitle() {
@@ -129,6 +137,7 @@ class mediacore_media_row
     /**
      * Get the size
      * TODO implement. 0 is ok for now.
+     *
      * @return int
      */
     public function get_size() {
@@ -137,6 +146,7 @@ class mediacore_media_row
 
     /**
      * Get the view url
+     *
      * @return string
      */
     public function get_view_url() {
@@ -145,6 +155,7 @@ class mediacore_media_row
 
     /**
      * Get the source link
+     *
      * @return string
      */
     public function get_source() {
@@ -154,6 +165,7 @@ class mediacore_media_row
 
     /**
      * Get the thumbnail url
+     *
      * @return string
      */
     public function get_thumbnail_url() {
@@ -167,6 +179,8 @@ class mediacore_media_row
 
     /**
      * Get the hardcoded thumb height
+     * TODO get the actual image height
+     *
      * @return int
      */
     public function get_thumbnail_height() {
@@ -175,6 +189,8 @@ class mediacore_media_row
 
     /**
      * Get the hardcoded thumb width
+     * TODO get the actual image width
+     *
      * @return int
      */
     public function get_thumbnail_width() {
@@ -183,6 +199,7 @@ class mediacore_media_row
 
     /**
      * Get the thumb title
+     *
      * @return string
      */
     public function get_thumbnail_title() {
@@ -191,6 +208,7 @@ class mediacore_media_row
 
     /**
      * Get the media title with extension
+     *
      * @return string
      */
     public function get_title() {
@@ -200,6 +218,7 @@ class mediacore_media_row
 
     /**
      * Get the file extension
+     *
      * @return string
      */
     public function get_primary_file_container() {
@@ -212,6 +231,7 @@ class mediacore_media_row
 
     /**
      * Get an array of the file data for the repository
+     *
      * @return array
      */
     public function get_repository_file_array() {
@@ -233,7 +253,8 @@ class mediacore_media_row
     }
 
     /**
-     * Truncate a string helper
+     * Truncate string helper
+     *
      * @param string $text
      * @param int $chars
      * @param string $pad
