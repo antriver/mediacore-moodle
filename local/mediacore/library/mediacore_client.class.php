@@ -157,6 +157,7 @@ class mediacore_client
      * Sign and return the LTI-signed chooser endpoint
      *
      * @param string|int $courseid
+     * @param array $lti_params
      * @return string
      */
     public function get_signed_chooser_url($courseid, $lti_params) {
@@ -170,7 +171,7 @@ class mediacore_client
      * Get an api2 constructed path from a supplied api2 path
      * segment and optional query parameters
      *
-     * TODO
+     * @param string ...
      * @return string
      */
     public function get_url() {
@@ -196,6 +197,7 @@ class mediacore_client
      * uses Oauth-1x
      *
      * @param string $endpoint
+     * @param string $method
      * @param int $courseid
      * @param array $params
      * @return array
@@ -225,7 +227,7 @@ class mediacore_client
     /**
      * Get the base lti request params
      *
-     * @param int $courseid
+     * @param object $course
      * @return array
      */
     public function get_lti_params($course) {
@@ -266,6 +268,7 @@ class mediacore_client
      * Urlencode the query params values
      *
      * @param string $params
+     * @return array
      */
     public function get_query($params) {
         $encoded_params = '';
@@ -305,12 +308,11 @@ class mediacore_client
      * Get a curl response
      *
      * @param string $url
-     * @param string $url
      * @param string $method
      * @param array $data
      * @param array $options
      * @param array $headers
-     * @return string|boolean
+     * @return string
      */
     private function _send($url, $method='GET', $data=null, $options=array(),
         $headers=array()) {
