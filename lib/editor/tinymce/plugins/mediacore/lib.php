@@ -71,7 +71,7 @@ class tinymce_mediacore extends editor_tinymce_plugin
 
         $mcore_client = new mediacore_client();
         $params = $params + $mcore_client->get_tinymce_params();
-        $image_row = $this->find_image_button($params)
+        $image_row = $this->find_image_button($params);
         $last_row = $this->count_button_rows($params);
 
         if ($image_row) {
