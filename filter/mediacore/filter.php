@@ -108,7 +108,7 @@ class filter_mediacore extends moodle_text_filter {
                     $height = $this->_default_thumb_height;
                 }
 
-                $html = $this->_mcore_client->get_embed_html_from_api1_view_url(
+                $html = $this->_get_embed_html_from_api1_view_url(
                     $href, $width, $height, $courseid);
                 if (empty($html)) {
                     $html = $this->_get_embed_error_html();
@@ -122,7 +122,7 @@ class filter_mediacore extends moodle_text_filter {
                 $width = $this->_default_thumb_width;
                 $height = $this->_default_thumb_height;
 
-                $html = $this->_mcore_client->get_embed_html_from_api2_view_url(
+                $html = $this->_get_embed_html_from_api2_view_url(
                     $href, $width, $height, $courseid);
                 if (empty($html)) {
                     $html = $this->_get_embed_error_html();
@@ -132,6 +132,88 @@ class filter_mediacore extends moodle_text_filter {
             }
         }
         return $dom->saveHTML();
+    }
+
+    /**
+     * Get the embed html by parsing the api1 view url for its slug
+     * e.g. https://demo.mediacore.tv/media/{slug}?context_id=2
+     *
+     * @param string $url
+     * @return string $id
+     */
+    private function _get_embed_html_from_api1_view_url($url, $width, $height,
+            $courseid=null) {
+        $patharr = explode('/', parse_url($url, PHP_URL_PATH));
+        $slug = end($patharr);
+        $url = $this->_mcore_client->get_url('media', 'slug:' . $slug);
+        return $this->_get_embed_html($url, $width, $height, $courseid);
+    }
+
+    /**
+     * Get the embed html by parsing the api2 view url for its id
+     * e.g. http://demo.mediacore.tv/media/{id}/view
+     *
+     * @param string $url
+     * @return string $id
+     */
+    private function _get_embed_html_from_api2_view_url($url, $width, $height,
+        $courseid=null) {
+        $patharr = explode('/', parse_url($url, PHP_URL_PATH));
+        $id = $patharr[count($patharr) - 2];
+        $url = $this->_mcore_client->get_url('media', $id);
+        return $this->_get_embed_html($url, $width, $height, $courseid);
+    }
+
+    /**
+     * Get the media embed html LTI signed if applicable
+     *
+     * @param string $url
+     * @param int $width
+     * @param int $height
+     * @param int|null $courseid
+     */
+    private function _get_embed_html($url, $width, $height, $courseid=null) {
+
+        $params = array(
+            'joins' => 'embedcode',
+        );
+        if (!is_null($courseid)) {
+            $params['context_id'] = $courseid;
+        }
+
+        if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
+            $headers = array();
+            $authtkt_str = $this->_mcore_client->get_auth_cookie($courseid);
+            if (empty($authtkt_str)) {
+                // TODO: report an error?
+            } else {
+                $headers = array('Cookie: ' . $authtkt_str);
+                $url .= '?' . $this->_mcore_client->get_query($params);
+                $result = $this->_mcore_client->get($url, null, $headers);
+            }
+        } else {
+            $result = $this->_mcore_client->get($url);
+        }
+
+        $html = '';
+        if (empty($result)) {
+            //TODO: report an error?
+        } else {
+            $result = json_decode($result);
+            $html = $result->joins->embedcode->html;
+
+            // replace the width and height with new values
+            $patterns = array(
+                '/width="([0-9]+)"/',
+                '/height="([0-9]+)"/'
+            );
+            $replace = array(
+                'width="' . $width . '"',
+                'height="' . $height . '"'
+            );
+            $html = preg_replace($patterns, $replace, $html);
+        }
+        return $html;
     }
 
     /**
