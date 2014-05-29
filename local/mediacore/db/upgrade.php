@@ -31,8 +31,29 @@
  */
 
 function xmldb_local_mediacore_upgrade($oldversion) {
-    global $CFG, $DB;
-    $DB->delete_records('config_plugins',
-            array('plugin' => 'local_mediacore_courselti'));
+    global $DB;
+
+    // Get the old 'url' setting, if there is one...
+    $old_record = $DB->get_record('config_plugins',
+            array('plugin'=>'local_mediacore', 'name'=>'url'));
+
+    // Replace the old 'url' setting with a new 'host' setting
+    // that includes only the hostname and port.
+    if ($old_record) {
+        $hostname = parse_url($old_record->value, PHP_URL_HOST);
+        $port = parse_url($old_record->value, PHP_URL_PORT);
+        $host = $hostname;
+        if ($port) {
+            $host .= ':' . $port;
+        }
+        $new_record = new stdClass();
+        $new_record->plugin = 'local_mediacore';
+        $new_record->name = 'host';
+        $new_record->value = $host;
+
+        $DB->insert_record('config_plugins', $new_record, false);
+        $DB->delete_records('config_plugins',
+                array('plugin' => 'local_mediacore', 'name' => 'url'));
+    }
     return true;
 }

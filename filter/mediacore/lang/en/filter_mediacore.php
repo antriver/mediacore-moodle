@@ -32,6 +32,10 @@
 $string['filtername'] = 'MediaCore media filter';
 
 // Errors.
-$string['filter_error_no_type_id'] = 'There was an error trying to locate this video.';
-$string['filter_no_type_mapping_error'] = 'This video can no longer be viewed in this course.';
+$string['filter_error_no_type_id']
+    = 'There was an error trying to locate this video.';
+
+$string['filter_no_type_mapping_error']
+    = 'This video can no longer be viewed in this course.';
+
 $string['filter_no_video_found'] = 'This video cannot be found.';

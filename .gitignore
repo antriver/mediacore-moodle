@@ -6,3 +6,7 @@
 Session.vim
 .netrwhist
 *~
+
+### MediaCore Moodle ###
+/bin/*
+/lib/editor/tinymce/plugins/mediacore/editor_plugin_src.js

@@ -10,7 +10,7 @@
 A set of [Moodle](http://moodle.org) plugins that integrate with
 [MediaCore](http://mediacore.com).
 
-Designed to work with Moodle 2.4+. Tested and compatible up to v2.6.
+Designed to work with Moodle 2.3+. Tested and compatible up to v2.6.
 
 ## Overview ##
 These plugins provide a rich set of Moodle-MediaCore integrations using LMS-LTI
@@ -35,16 +35,18 @@ TinyMCE and Repository plugins into MediaCore's embedded video player.
 ## Installation/Upgrade ##
 
 
-### Upgrading from MediaCore Plugin v1.5/v1.6 ###
+### Upgrading from an older MediaCore Plugin: ###
 
 To make the installation go smoothly we recommend you remove any old versions
 of the MediaCore plugin from your Moodle install. This is done by removing the
 following directories, if they exist:
 
 - `path/to/moodle/filters/mediacore`
-- `path/to/moodle/lib/editor/tinymce/plugins/mediacore`
 - `path/to/moodle/local/mediacore`
 - `path/to/moodle/repository/mediacore`
+- **Moodle 2.3:** `path/to/moodle/lib/editor/tinymce/tiny_mce/{version}/plugins/mediacore`
+- **Moodle 2.4+:** `path/to/moodle/lib/editor/tinymce/plugins/mediacore`
+
 
 
 After doing this you will also need to Navigate to: `Site administration ->
@@ -54,25 +56,26 @@ from the Moodle database:
 - `MediaCore media filter`
 - `Mediacore search`
 - `MediaCore media picker`
-- `Mediacore Package libraries`
+- `Mediacore package libraries`
 
 ** Note: any previous Moodle/MediaCore settings will be removed when you delete
   or upgrade the MediaCore plugin from v1.6 to v2.0. These old v1.6 settings are
   no longer valid.*
 
 Once any old versions have been removed, you can begin to install the new
-version of the plugin. 
+version of the plugin.
 
-### Installing/Upgrading from MediaCore Plugin v2.0+ ###
+### Installing/Upgrading the MediaCore Plugin: ###
 
-Upgrading the MediaCore plugin v2.0 is done by copying the following folders into 
+Upgrading the MediaCore plugin v2.0 is done by copying the following folders into
 the correct Moodle directories.
 
-- `filters/mediacore` into `path/to/moodle/filters/`
-- `lib/editor/tinymce/plugins/mediacore` into
+- copy `filters/mediacore` into `path/to/moodle/filters/`
+- **Moodle 2.3:** copy `lib/editor/tinymce/mediacore` **into** `path/to/moodle/lib/editor/tinymce/tiny_mce/{version}/plugins/`
+- **Moodle 2.4:** copy `lib/editor/tinymce/plugins/mediacore` **into**
   `path/to/moodle/lib/editor/tinymce/plugins/`
-- `local/mediacore` into `path/to/moodle/local/`
-- `repository/mediacore` into `path/to/moodle/repository/`
+- copy `local/mediacore` into `path/to/moodle/local/`
+- copy `repository/mediacore` into `path/to/moodle/repository/`
 
 To finalize the installation you will need to navigate to: `Site administration
 -> Notifications` and click "Check for available updates". Click "Upgrade
@@ -83,14 +86,36 @@ Moodle database now" to complete this step.
 To hook your MediaCore site into Moodle you must navigate to: `Site
 administration -> Plugins -> Local plugins -> MediaCore package config` and enter:
 
-- the `URL` of your MediaCore site (i.e. http://demo.mediacore.tv). Note if your
-Moodle site is served over https, then your MediaCore site url should also include
-https (i.e. https://demo.mediacore.tv)
+- the `HOSTNAME` of your MediaCore site (i.e. demo.mediacore.tv).
 - the name of your `LTI consumer key` (this must match a valid LTI consumer in
   your MediaCore site)
 - the secret of your `LTI shared secret` (this also must match the secret in the
   LTI consumer above)
-  
+
+### Moodle/MediaCore TinyMCE plugin configuration setup: ###
+
+For **Moodle 2.3** installations:
+
+1. Move the `editor_plugin.js` file from `/lib/editor/tinymce/plugins/mediacore/tinymce` to `lib/editor/tinymce/tiny_mce/{version}/plugins/mediacore/` and **rename** it to `editor_plugin_src.js`.
+2. Then, delete the `/lib/editor/tinymce/plugins/mediacore/tinymce` directory.
+3. Now we need to let Moodle know about the MediaCore TinyMCE plugin. Open:
+    `/path/to/moodle/lib/editor/tinymce/lib.php`
+
+4. At the bottom of the `get_init_params` function, just above `return $params`, add the following lines of code:
+
+    ~~~~~~~
+    //for mediacore
+    if (class_exists('mediacore_client', true /* autoload */)) {
+        $mcore_client = new mediacore_client();
+        $params = $mcore_client->configure_tinymce_lib_params($filters, $params);
+    }
+    ~~~~~~~
+
+For **Moodle 2.4+** installations:
+
+- Once the `lib/editor/tinymce/plugins/mediacore` directory is in place, configuration is automatic.
+
+
 ### Moodle/MediaCore Filter configuration setup: ###
 
 In order for videos to display in Moodle, you must enable the MediaCore Filter.

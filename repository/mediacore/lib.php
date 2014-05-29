@@ -27,14 +27,17 @@
  * @category   repository
  * @copyright  2013 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 
 defined('MOODLE_INTERNAL') || die('Invalid access');
-global $CFG;
-require_once($CFG->dirroot . '/repository/lib.php');
-require_once($CFG->dirroot . '/local/mediacore/lib.php');
 
-define('MEDIACORE_THUMBS_PER_PAGE', 24);
+global $CFG;
+require_once $CFG->dirroot . '/repository/lib.php';
+require_once $CFG->dirroot . '/local/mediacore/lib.php';
+require_once 'mediacore_client.class.php';
+require_once 'mediacore_media.class.php';
+
 
 /**
  * repository_mediacore class
@@ -46,7 +49,9 @@ define('MEDIACORE_THUMBS_PER_PAGE', 24);
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class repository_mediacore extends repository {
+class repository_mediacore extends repository
+{
+    const MEDIACORE_MEDIA_PER_PAGE = 30;
     private $_mcore_client;
     private $_mcore_media;
 
@@ -56,7 +61,8 @@ class repository_mediacore extends repository {
      * @param object $context
      * @param array $options
      */
-    public function __construct($repositoryid, $context = SYSCONTEXTID, $options = array()) {
+    public function __construct($repositoryid, $context = SYSCONTEXTID,
+            $options = array()) {
         parent::__construct($repositoryid, $context, $options);
         $this->_mcore_client = new mediacore_client();
         $this->_mcore_media = new mediacore_media($this->_mcore_client);
@@ -71,82 +77,67 @@ class repository_mediacore extends repository {
      * @param string $search_text
      * @return array
      */
-    public function search($search_text, $page = 0) {
+    public function search($search_text, $page=1) {
         global $SESSION, $COURSE;
         $sess_keyword = 'mediacore_'.$this->id.'_keyword';
 
-        // This is the request of another page for the last search, retrieve the cached keyword and sort.
         if ($page && !$search_text && isset($SESSION->{$sess_keyword})) {
+            // This is the request of another page for the last search, retrieve
+            //  the cached keyword and sort.
             $search_text = $SESSION->{$sess_keyword};
+        } else {
+            // Save this search in session.
+            $SESSION->{$sess_keyword} = $search_text;
         }
-
-        // Save this search in session.
-        $SESSION->{$sess_keyword} = $search_text;
 
         $this->keyword = $search_text;
-        $ret  = array();
-        $ret['nologin'] = true;
-        $ret['page'] = (int)$page;
-        if ($ret['page'] < 1) {
-            $ret['page'] = 1;
+
+        // Clamp the page number to a valid range
+        $page = (int)$page;
+        if (empty($page) || $page < 1) {
+            $page = 1;
         }
 
-        $ret['list'] = $this->_get_collection($search_text, $ret['page'] - 1);
+        $media_results = $this->_get_media($search_text, $page);
+
+        $ret  = array();
+        $ret['list'] = $media_results['files'];
+        $ret['nologin'] = true;
         $ret['norefresh'] = true;
         $ret['nosearch'] = true;
-        $ret['pages'] = $this->_mcore_media->get_page_count();
+        $ret['page'] = $page;
+        $ret['pages'] = $media_results['pages'];
+
         return $ret;
     }
 
-    private function _get_collection($search_text, $page = 0) {
+    private function _get_media($search_text, $page=1) {
         global $COURSE;
-        $cid = isset($COURSE->id) ? $COURSE->id : NULL;
-        $media = $this->_mcore_media->fetch_media($page, $search_text,
-            MEDIACORE_THUMBS_PER_PAGE, $cid);
-        if (!$media) {
-            // TODO: Return that there was an issue connecting MediaCore.
-            return array();
-        }
+        $cid = isset($COURSE->id) ? $COURSE->id : null;
+        $items = $this->_mcore_media->get_media($search_text, $page,
+            self::MEDIACORE_MEDIA_PER_PAGE, $cid);
 
         $files_array = array();
-        foreach ($media as $m) {
-            $query_string = (isset($lti_type_id) ? '?type_id=' . $lti_type_id : '');
-            $thumb = $m->thumbs->s;
-            $files_array[] = array(
-                'shorttitle' => $this->_truncate_text($m->title, 25),
-                'thumbnail_title' => $this->_truncate_text($m->title),
-                'title' => $m->title.'.avi',
-                'author' => $m->author,
-                'datemodified' => strtotime($m->modified_on),
-                'datecreated' => strtotime($m->created_on),
-                'thumbnail' => $thumb->url,
-                'thumbnail_width' => $thumb->x,
-                'thumbnail_height' => $thumb->y,
-                'size' => '',
-                'id' => $m->id,
-                'source' => $m->url . $query_string . "#$m->title",
-            );
+        $count = 0;
+        $pages = 0;
+
+        if (!empty($items)) {
+            foreach ($items as $item) {
+                $files_array[] = $item->get_repository_file_array();
+            }
+            $count = $this->_mcore_media->get_media_count($search_text, $cid);
+            $pages = ceil($count/self::MEDIACORE_MEDIA_PER_PAGE);
+        } else {
+            // TODO: Return that there was an issue connecting MediaCore.
         }
-        return $files_array;
+
+        return array(
+            'files' => $files_array,
+            'count' => $count,
+            'pages' => $pages
+        );
     }
 
-    private function _truncate_text($text, $chars = 20, $pad = '...') {
-        if (strlen($text) <= $chars) {
-            return $text;
-        }
-        $result = ''; $count = 0;
-        $words = explode(' ', $text);
-        foreach ($words as $w) {
-            $wcount = strlen($w);
-            if (($count + $wcount) <= $chars) {
-                $result .= $w . ' ';
-                $count += $wcount + 1;
-            } else {
-                break;
-            }
-        }
-        return rtrim($result, ' ') . $pad;
-    }
 
     /**
      * MediaCore plugin doesn't support global search
@@ -156,7 +147,7 @@ class repository_mediacore extends repository {
     }
 
     public function get_listing($path='', $page = '') {
-        return array();
+        return $this->search('', $page);
     }
 
     /**
@@ -164,20 +155,17 @@ class repository_mediacore extends repository {
      */
     public function print_login($ajax = true) {
         $search = new stdClass();
-        $search->label = get_string('keyword', 'repository_mediacore').': ';
-        $search->id   = 'input_text_keyword';
         $search->type = 'text';
-        $search->name = 'mediacore_keyword';
-        $search->value = '';
+        $search->id   = 'mediacore_search';
+        $search->name = 's';
+        $search->label = get_string('keyword', 'repository_mediacore').': ';
 
         $ret = array();
         $ret['login'] = array($search);
         $ret['login_btn_label'] = get_string('search');
         $ret['login_btn_action'] = 'search';
-
         // Indicates that login form can be cached in filepicker.js.
         $ret['allowcaching'] = true;
-
         return $ret;
     }
 

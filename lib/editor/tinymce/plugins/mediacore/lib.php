@@ -31,43 +31,55 @@
  */
 
 defined('MOODLE_INTERNAL') || die('Invalid access');
+
 global $CFG;
-require_once($CFG->dirroot . '/local/mediacore/lib.php');
+require_once $CFG->dirroot . '/local/mediacore/lib.php';
+require_once 'mediacore_client.class.php';
+
 
 /**
  * Plugin for MediaCore media
+ *
+ * This module is used to configure the MediaCore button in TinyMCE for
+ * Moodle 2.4+
+ *
+ * Moodle 2.3 uses a different method to configure the plugin. See
+ * MediaCore plugin installation documentation for details.
  *
  * @package tinymce_mediacore
  * @copyright 2012 MediaCore Technologies Inc
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tinymce_mediacore extends editor_tinymce_plugin {
-
+class tinymce_mediacore extends editor_tinymce_plugin
+{
     /** @var array list of buttons defined by this plugin */
     protected $buttons = array('mediacore');
 
     protected function update_init_params(array &$params, context $context,
         array $options = null) {
 
-        global $CFG, $COURSE;
+        // 'mediacore' is the key used in Moodle >= 2.5
+        // 'filter/mediacore' is the key used in Moodle < 2.5
+        $filters = filter_get_active_in_context($context);
+        $enabled  = array_key_exists('mediacore', $filters)
+                 || array_key_exists('filter/mediacore', $filters);
 
         // If mediacore filter is disabled, do not add button.
-        // Note: Test for "filter/mediacore" to remain compatible with Moodle < 2.5.
-        $filters = filter_get_active_in_context($context);
-        if (!array_key_exists('mediacore', $filters)
-            && !array_key_exists('filter/mediacore', $filters)) {
+        if (!$enabled) {
             return;
         }
 
         $mcore_client = new mediacore_client();
         $params = $params + $mcore_client->get_tinymce_params();
+        $image_row = $this->find_image_button($params);
+        $last_row = $this->count_button_rows($params);
 
-        // Add button after images button.
-        if ($row = $this->find_image_button($params)) {
-            $this->add_button_after($params, $row, 'mediacore', 'image');
+        if ($image_row) {
+            // If there is an 'image' button, add the 'mediacore' button after it
+            $this->add_button_after($params, $image_row, 'mediacore', 'image');
         } else {
-            // If 'image' is not found, add button in the end of the last row.
-            $this->add_button_after($params, $this->count_button_rows($params), 'mediacore');
+            // Otherwise, just append the 'mediacore' button to the last row
+            $this->add_button_after($params, $last_row, 'mediacore');
         }
 
         // Add JS file, which uses default name.
