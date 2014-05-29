@@ -82,20 +82,20 @@ class mediacore_media
             $params['sort'] = 'relevance';
         }
 
-        $api_url = $this->_client->get_url('media');
+        $url = $this->_client->get_url('media');
 
         if ($this->_client->has_lti_config() && !is_null($courseid)) {
-            $options = array();
+            $headers = array();
             $authtkt_str = $this->_client->get_auth_cookie($courseid);
-            if (!empty($authtkt_str)) {
-                $options[CURLOPT_HTTPHEADER] = array(
-                    'Cookie: ' . $authtkt_str
-                );
+            if (empty($authtkt_str)) {
+                // TODO: report an error?
+            } else {
+                $headers = array('Cookie: ' . $authtkt_str);
+                $url .= '?' . $this->_client->get_query($params);
+                $result = $this->_client->get($url, null, $headers);
             }
-            $api_url .= '?' . $this->_client->get_query($params);
-            $result = $this->_client->get($api_url, $options);
         } else {
-            $result = $this->_client->get($api_url);
+            $result = $this->_client->get($url);
         }
 
         $rowset = null;
@@ -131,20 +131,20 @@ class mediacore_media
             $params['search'] = urlencode($search);
         }
 
-        $api_url = $this->_client->get_url('media', 'count');
+        $url = $this->_client->get_url('media', 'count');
 
         if ($this->_client->has_lti_config() && !is_null($courseid)) {
-            $options = array();
+            $headers = array();
             $authtkt_str = $this->_client->get_auth_cookie($courseid);
-            if (!empty($authtkt_str)) {
-                $options[CURLOPT_HTTPHEADER] = array(
-                    'Cookie: ' . $authtkt_str
-                );
+            if (empty($authtkt_str)) {
+                // TODO: report an error?
+            } else {
+                $headers = array('Cookie: ' . $authtkt_str);
+                $url .= '?' . $this->_client->get_query($params);
+                $result = $this->_client->get($url, null, $headers);
             }
-            $api_url .= '?' . $this->_client->get_query($params);
-            $result = $this->_client->get($api_url, $options);
         } else {
-            $result = $this->_client->get($api_url);
+            $result = $this->_client->get($url);
         }
 
         $count = 0;
