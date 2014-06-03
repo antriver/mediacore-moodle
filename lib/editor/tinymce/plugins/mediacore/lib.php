@@ -71,34 +71,30 @@ class tinymce_mediacore extends editor_tinymce_plugin
 
         $mcore_client = new mediacore_client();
         $params = $params + $mcore_client->get_tinymce_params();
-        $image_row = $this->find_image_button($params);
-        $last_row = $this->count_button_rows($params);
-
-        if ($image_row) {
-            // If there is an 'image' button, add the 'mediacore' button after it
-            $this->add_button_after($params, $image_row, 'mediacore', 'image');
-        } else {
-            // Otherwise, just append the 'mediacore' button to the last row
-            $this->add_button_after($params, $last_row, 'mediacore');
-        }
+        $numrows = $this->count_button_rows($params);
+        $this->add_button_after($params, $numrows, '|,mediacore');
 
         // Add JS file, which uses default name.
         $this->add_js_plugin($params);
     }
 
     /**
-     * Custom implementation of $this->find_button(array $params, $button
-     *  from Moodle v2.6
+     * Counts the number of rows in TinyMCE editor (row numbering starts with 1)
+     * Re-implementation of {@link lib/editor/tinymce/classes/plugin.php} in
+     * Moodle v2.6+
+     *
+     * @override
      * @param array $params TinyMCE init parameters array
-     * @return int the image row if exists, lower number if does not exist.
+     * @return int the maximum existing row number
      */
-    protected function find_image_button(array &$params) {
+    protected function count_button_rows(array &$params) {
+        $maxrow = 1;
         foreach ($params as $key => $value) {
             if (preg_match('/^theme_advanced_buttons(\d+)$/', $key, $matches) &&
-                    strpos(','. $value. ',', ',image,') !== false) {
-                return (int)$matches[1];
+                    (int)$matches[1] > $maxrow) {
+                $maxrow = (int)$matches[1];
             }
         }
-        return false;
+        return $maxrow;
     }
 }
