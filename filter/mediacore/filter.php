@@ -103,7 +103,7 @@ class filter_mediacore extends moodle_text_filter {
 
                 if (empty($width) || empty($height)
                     || ($width == 195 && $height == 110)) {
-                    // Keep old moodle embeds the default size
+                    // Keep old moodle embeds @ the default size
                     $width = $this->_default_thumb_width;
                     $height = $this->_default_thumb_height;
                 }
@@ -138,12 +138,12 @@ class filter_mediacore extends moodle_text_filter {
      * Get the embed html by parsing the api1 view url for its slug
      * e.g. https://demo.mediacore.tv/media/{slug}?context_id=2
      *
-     * @param string $url
+     * @param string $href
      * @return string $id
      */
-    private function _get_embed_html_from_api1_view_url($url, $width, $height,
+    private function _get_embed_html_from_api1_view_url($href, $width, $height,
             $courseid=null) {
-        $patharr = explode('/', parse_url($url, PHP_URL_PATH));
+        $patharr = explode('/', parse_url($href, PHP_URL_PATH));
         $slug = end($patharr);
         $url = $this->_mcore_client->get_url('media', 'slug:' . $slug);
         return $this->_get_embed_html($url, $width, $height, $courseid);
@@ -153,12 +153,12 @@ class filter_mediacore extends moodle_text_filter {
      * Get the embed html by parsing the api2 view url for its id
      * e.g. http://demo.mediacore.tv/media/{id}/view
      *
-     * @param string $url
+     * @param string $href
      * @return string $id
      */
-    private function _get_embed_html_from_api2_view_url($url, $width, $height,
+    private function _get_embed_html_from_api2_view_url($href, $width, $height,
         $courseid=null) {
-        $patharr = explode('/', parse_url($url, PHP_URL_PATH));
+        $patharr = explode('/', parse_url($href, PHP_URL_PATH));
         $id = $patharr[count($patharr) - 2];
         $url = $this->_mcore_client->get_url('media', $id);
         return $this->_get_embed_html($url, $width, $height, $courseid);
@@ -200,20 +200,49 @@ class filter_mediacore extends moodle_text_filter {
             //TODO: report an error?
         } else {
             $result = json_decode($result);
-            $html = $result->joins->embedcode->html;
-
-            // replace the width and height with new values
-            $patterns = array(
-                '/width="([0-9]+)"/',
-                '/height="([0-9]+)"/'
-            );
-            $replace = array(
-                'width="' . $width . '"',
-                'height="' . $height . '"'
-            );
-            $html = preg_replace($patterns, $replace, $html);
+            $embed_url = $result->joins->embedcode->url;
+            $html = $this->_create_iframe_html($embed_url, $width, $height, $courseid);
         }
         return $html;
+    }
+
+
+    /**
+     * Create an iframe for the embed url with signed lti parameters
+     *
+     * @param string $embed_url
+     * @param int $width
+     * @param int $height
+     * @param int $courseid
+     * @return $html
+     */
+    private function _create_iframe_html($embed_url, $width, $height, $courseid=null) {
+        $params = array('iframe'=>'True');
+
+        $iframe_str = '<iframe' .
+            ' src="%src%"' .
+            ' width="%width%"' .
+            ' height="%height%"' .
+            ' allowfullscreen="allowfullscreen"' .
+            ' frameborder="0">' .
+            '</iframe>';
+
+        $embed_path = parse_url($embed_url, PHP_URL_PATH);
+        $endpoint = $this->_mcore_client->get_siteurl() . $embed_path;
+
+        if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
+            $params = $this->_mcore_client->get_signed_lti_params(
+                $endpoint, 'GET', $courseid, $params
+            );
+        }
+
+        $query = http_build_query($params); // "&" encoded as "&amp;"
+        $iframe_src = $endpoint . '?' . $query;
+
+        $patterns = array('/%src%/', '/%width%/', '/%height%/');
+        $replace = array($iframe_src, $width, $height);
+
+        return preg_replace($patterns, $replace, $iframe_str);
     }
 
     /**
