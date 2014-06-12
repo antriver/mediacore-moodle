@@ -189,7 +189,7 @@ class mediacore_client
      * @param array $data
      * @param array $options
      * @param array $headers
-     * @return string
+     * @return string|boolean
      */
     private function _send($url, $method='GET', $data=null, $options=array(),
         $headers=array()) {
@@ -372,8 +372,8 @@ class mediacore_client
         $key = $this->_config->get_consumer_key();
         $secret = $this->_config->get_shared_secret();
         $query_params = $this->get_lti_params($course);
-        return lti_sign_parameters(array_merge($query_params, $params), $endpoint,
-            $method, $key, $secret);
+        return lti_sign_parameters(array_replace($query_params, $params),
+            $endpoint, $method, $key, $secret);
     }
 
     /**
