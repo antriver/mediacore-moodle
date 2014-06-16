@@ -82,7 +82,7 @@ class mediacore_media
             $params['sort'] = 'relevance';
         }
 
-        $url = $this->_mcore_client->get_url('media');
+        $url = $this->_mcore_client->get_url('api2', 'media');
 
         if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
             $headers = array();
@@ -131,7 +131,7 @@ class mediacore_media
             $params['search'] = urlencode($search);
         }
 
-        $url = $this->_mcore_client->get_url('media', 'count');
+        $url = $this->_mcore_client->get_url('api2', 'media', 'count');
 
         if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
             $headers = array();

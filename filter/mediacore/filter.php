@@ -164,7 +164,7 @@ class filter_mediacore extends moodle_text_filter {
      */
     private function _get_embed_html($id, $width, $height, $courseid=null) {
 
-        $embed_url = $this->_mcore_client->get_url('media', $id, 'embed');
+        $embed_url = $this->_mcore_client->get_url('api2', 'media', $id, 'embed');
         if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
             $params['context_id'] = $courseid;
             $params = $this->_mcore_client->get_signed_lti_params(
@@ -173,7 +173,7 @@ class filter_mediacore extends moodle_text_filter {
         }
 
         //NOTE: to get the latest template:
-        //$template_url = $this->_mcore_client->get_url('media', 'embed-template');
+        //$template_url = $this->_mcore_client->get_url('api2', 'media', 'embed-template');
         //$result = $this->_mcore_client->get($template_url);
         //if (empty($result)) {
             //return $this->_get_embed_error_html($error='Empty result');

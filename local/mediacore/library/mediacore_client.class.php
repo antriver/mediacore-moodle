@@ -135,7 +135,7 @@ class mediacore_client
      */
     public function get_url() {
         $args = func_get_args();
-        $url = $this->get_siteurl() . '/api2/';
+        $url = $this->get_siteurl() . '/';
         if (!empty($args)) {
             $url .= implode('/', $args);
         }
@@ -242,7 +242,7 @@ class mediacore_client
     public function get_auth_cookie($courseid) {
         global $CFG;
 
-        $authtkt_url = $this->get_url('lti', 'authtkt');
+        $authtkt_url = $this->get_url('api2', 'lti', 'authtkt');
         $signed_lti_params = $this->get_signed_lti_params(
             $authtkt_url, 'POST', $courseid);
 
