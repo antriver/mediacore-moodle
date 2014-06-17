@@ -174,6 +174,7 @@ class filter_mediacore extends moodle_text_filter {
             $params = $this->_mcore_client->get_signed_lti_params(
                 $embed_url, 'GET', $courseid, $params
             );
+            $embed_url .= '?' . http_build_query($params);
         }
 
         //NOTE: to get the latest template:
@@ -186,6 +187,7 @@ class filter_mediacore extends moodle_text_filter {
         //if (empty($json) || !isset($json->html)) {
             //return $this->_get_embed_error_html($error='Unexpected Json:' . $result);
         //}
+        //$template = $json->html;
         $template = '<iframe src="URL" ' .
             'width="WIDTH" ' .
             'height="HEIGHT" ' .
@@ -194,12 +196,8 @@ class filter_mediacore extends moodle_text_filter {
             'frameborder="0"> ' .
             '</iframe>';
 
-        $iframe_url = $embed_url;
-        if (!empty($params)) {
-            $iframe_url .= '?' . http_build_query($params);
-        }
         $patterns = array('/URL/', '/WIDTH/', '/HEIGHT/');
-        $replace = array($iframe_url, $width, $height);
+        $replace = array($embed_url, $width, $height);
         return preg_replace($patterns, $replace, $template);
     }
 
