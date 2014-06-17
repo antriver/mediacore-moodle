@@ -137,7 +137,7 @@ class filter_mediacore extends moodle_text_filter {
             $courseid=null) {
         $patharr = explode('/', parse_url($href, PHP_URL_PATH));
         $slug = end($patharr);
-        return $this->_get_embed_html('slug:' . $slug, $width, $height, $courseid);
+        return $this->_get_embed_html($slug, $width, $height, $courseid);
     }
 
     /**
@@ -151,29 +151,34 @@ class filter_mediacore extends moodle_text_filter {
         $courseid=null) {
         $patharr = explode('/', parse_url($href, PHP_URL_PATH));
         $id = $patharr[count($patharr) - 2];
-        return $this->_get_embed_html($id, $width, $height, $courseid);
+        return $this->_get_embed_html('id:' . $id, $width, $height, $courseid);
     }
 
     /**
      * Get the media embed html LTI signed if applicable
      *
-     * @param string $url
+     * @param string $slug
      * @param int $width
      * @param int $height
      * @param int|null $courseid
      */
-    private function _get_embed_html($id, $width, $height, $courseid=null) {
+    private function _get_embed_html($slug, $width, $height, $courseid=null) {
 
-        $embed_url = $this->_mcore_client->get_url('media', $id, 'embed');
+        $params = array(
+          'iframe' => 'True',
+        );
+
+        $embed_url = $this->_mcore_client->get_url('media', $slug, 'embed_player');
         if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
             $params['context_id'] = $courseid;
             $params = $this->_mcore_client->get_signed_lti_params(
                 $embed_url, 'GET', $courseid, $params
             );
+            $embed_url .= '?' . http_build_query($params);
         }
 
         //NOTE: to get the latest template:
-        //$template_url = $this->_mcore_client->get_url('media', 'embed-template');
+        //$template_url = $this->_mcore_client->get_url('api2', 'media', 'embed-template');
         //$result = $this->_mcore_client->get($template_url);
         //if (empty($result)) {
             //return $this->_get_embed_error_html($error='Empty result');
@@ -182,6 +187,7 @@ class filter_mediacore extends moodle_text_filter {
         //if (empty($json) || !isset($json->html)) {
             //return $this->_get_embed_error_html($error='Unexpected Json:' . $result);
         //}
+        //$template = $json->html;
         $template = '<iframe src="URL" ' .
             'width="WIDTH" ' .
             'height="HEIGHT" ' .
@@ -190,12 +196,8 @@ class filter_mediacore extends moodle_text_filter {
             'frameborder="0"> ' .
             '</iframe>';
 
-        $iframe_url = $embed_url;
-        if (!empty($params)) {
-            $iframe_url .= '?' . http_build_query($params);
-        }
         $patterns = array('/URL/', '/WIDTH/', '/HEIGHT/');
-        $replace = array($iframe_url, $width, $height);
+        $replace = array($embed_url, $width, $height);
         return preg_replace($patterns, $replace, $template);
     }
 
