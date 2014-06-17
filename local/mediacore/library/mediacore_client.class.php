@@ -135,9 +135,9 @@ class mediacore_client
      */
     public function get_url() {
         $args = func_get_args();
-        $url = $this->get_siteurl() . '/';
-        if (!empty($args)) {
-            $url .= implode('/', $args);
+        $url = $this->get_siteurl();
+        if (is_array($args) && !empty($args)) {
+            $url .= '/' . implode('/', $args);
         }
         return $url;
     }
