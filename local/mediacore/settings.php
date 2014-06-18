@@ -39,6 +39,13 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage(MEDIACORE_PLUGIN_NAME, get_string('pluginname',
             MEDIACORE_PLUGIN_NAME));
 
+    //heading
+    $setting = new admin_setting_heading(MEDIACORE_SETTINGS_NAME . '/heading',
+            '',
+            get_string('setting_heading_desc', MEDIACORE_PLUGIN_NAME));
+    $setting->plugin = MEDIACORE_SETTINGS_NAME;
+    $settings->add($setting);
+
     //host
     $host_re = '/^(([a-z0-9-]+\.)+([a-z0-9-]{2,})|localhost)(:[0-9]{1,5})*$/';
     $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME . '/host',
