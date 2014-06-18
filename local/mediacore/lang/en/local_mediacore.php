@@ -35,6 +35,8 @@ $string['pluginname'] = 'MediaCore package config';
 $string['setting_host_label'] = 'Your MediaCore Hostname:';
 $string['setting_host_desc'] = '<em>e.g: demo.mediacore.tv</em>';
 
+$string['setting_scheme_label'] = 'Use HTTPS';
+
 $string['setting_consumer_key_label'] = 'Your MediaCore Consumer Key';
 
 $string['setting_consumer_key_desc'] = '<em>Note: This must match an existing '

@@ -48,6 +48,13 @@ if ($hassiteconfig) {
     $setting->plugin = MEDIACORE_SETTINGS_NAME;
     $settings->add($setting);
 
+    //scheme
+    $setting = new admin_setting_configcheckbox(MEDIACORE_SETTINGS_NAME . '/scheme',
+            get_string('setting_scheme_label', MEDIACORE_PLUGIN_NAME),
+            '', 'http', 'https', 'http');
+    $setting->plugin = MEDIACORE_SETTINGS_NAME;
+    $settings->add($setting);
+
     //consumer_key
     $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME .'/consumer_key',
             get_string('setting_consumer_key_label', MEDIACORE_PLUGIN_NAME),
