@@ -58,9 +58,9 @@ class filter_mediacore extends moodle_text_filter {
     public function __construct($context, array $localconfig) {
         parent::__construct($context, $localconfig);
         $this->_mcore_client = new mediacore_client();
-        $host = $this->_mcore_client->get_host_and_port();
-        $this->_api1_view_link_re = "/$host\/media\/[a-z0-9_-]+\?context_id/";
-        $this->_api2_view_link_re = "/$host\/api2\/media\/[0-9]+\/view/";
+        $host = $this->_mcore_client->get_host();
+        $this->_api1_view_link_re = "/($host)[:0-9]*\/media\/[a-z0-9_-]+\?context_id/";
+        $this->_api2_view_link_re = "/($host)[:0-9]*\/api2\/media\/[0-9]+\/view/";
     }
 
     /**
@@ -72,6 +72,7 @@ class filter_mediacore extends moodle_text_filter {
      *   (see $_api2_view_link_re).
      * The Chooser style link will updated in the future to match the new link
      *   style.
+     *
      * @param string $html
      * @param array $options
      * @return string
@@ -81,7 +82,7 @@ class filter_mediacore extends moodle_text_filter {
         $courseid = (isset($COURSE->id)) ? $COURSE->id : null;
 
         if (empty($html) || !is_string($html) ||
-            strpos($html, $this->_mcore_client->get_host_and_port()) === false) {
+            strpos($html, $this->_mcore_client->get_host()) === false) {
             return $html;
         }
         $dom = new DomDocument();
