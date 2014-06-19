@@ -58,7 +58,7 @@ if ($hassiteconfig) {
     //scheme
     $setting = new admin_setting_configcheckbox(MEDIACORE_SETTINGS_NAME . '/scheme',
             get_string('setting_scheme_label', MEDIACORE_PLUGIN_NAME),
-            '', 'http', 'https', 'http');
+            '', MEDIACORE_DEFAULT_SCHEME, 'https', 'http');
     $setting->plugin = MEDIACORE_SETTINGS_NAME;
     $settings->add($setting);
 

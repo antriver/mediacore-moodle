@@ -112,6 +112,9 @@ class mediacore_config
      * @return string
      */
     public function get_scheme() {
+        if (empty($this->_scheme)) {
+            return MEDIACORE_DEFAULT_SCHEME;
+        }
         return $this->_scheme;
     }
 
