@@ -37,6 +37,7 @@ $plugin->component          = 'filter_mediacore';
 $plugin->version            = 2014061800;
 $plugin->requires           = 2011033007;
 $plugin->release            = '3.0';
+$plugin->maturity           = MATURITY_STABLE;
 $plugin->dependencies       = array(
     'local_mediacore' => 2014061800
 );
