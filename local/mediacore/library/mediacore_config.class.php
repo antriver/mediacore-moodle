@@ -48,6 +48,7 @@ class mediacore_config
         // These members are populated from the DB
         '_consumer_key',
         '_host',
+        '_scheme',
         '_shared_secret',
         '_version',
     );
@@ -104,6 +105,17 @@ class mediacore_config
      */
     public function get_host() {
         return rtrim($this->_host, '/');
+    }
+
+    /**
+     * Get the mediacore host scheme
+     * @return string
+     */
+    public function get_scheme() {
+        if (empty($this->_scheme)) {
+            return MEDIACORE_DEFAULT_SCHEME;
+        }
+        return $this->_scheme;
     }
 
     /**

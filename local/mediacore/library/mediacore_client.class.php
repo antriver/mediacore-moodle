@@ -49,7 +49,6 @@ class mediacore_client
     private $_chooser_path = '/chooser';
     private $_config;
     private $_uri;
-    private static $_scheme = 'https';
 
     /**
      * Constructor
@@ -61,9 +60,9 @@ class mediacore_client
         // may actually contain a port (e.g. 'blah.com:8080' not just 'blah.com')
         // so we can't just pass it to Zend_Uri_Http.setHost(), like one might
         // expect
-        $this->_uri = Zend_Uri_Http::fromString(
-            self::$_scheme . '://' . $this->_config->get_host()
-        );
+        $url = $this->_config->get_scheme() . '://' .
+                $this->_config->get_host();
+        $this->_uri = Zend_Uri_Http::fromString($url);
     }
 
     /**
@@ -81,7 +80,7 @@ class mediacore_client
      * @return string|boolean
      */
     public function get_scheme() {
-        return self::$_scheme;
+        return $this->_uri->getScheme();
     }
 
     /**
@@ -122,8 +121,7 @@ class mediacore_client
      * @return string
      */
     public function get_siteurl() {
-        return $this->get_scheme() .
-            '://' . $this->get_host_and_port();
+        return $this->_uri->getUri();
     }
 
     /**

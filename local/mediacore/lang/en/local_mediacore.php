@@ -32,25 +32,30 @@
 // Plugin settings.
 $string['pluginname'] = 'MediaCore package config';
 
+$string['setting_heading_desc'] = <<<EOT
+These settings customize the method in which your Moodle instance connects to your MediaCore site.
+
+Please see the following [support articles](http://support.mediacore.com/customer/portal/articles/search?q=moodle")
+for complete information on this plugin.
+
+It also may be necessary to purge your Moodle caches after changing these settings.
+EOT;
+
 $string['setting_host_label'] = 'Your MediaCore Hostname:';
-$string['setting_host_desc'] = '<em>e.g: demo.mediacore.tv</em>';
+$string['setting_host_desc'] = '*e.g: demo.mediacore.tv*';
+
+$string['setting_scheme_label'] = 'Use HTTPS';
 
 $string['setting_consumer_key_label'] = 'Your MediaCore Consumer Key';
 
-$string['setting_consumer_key_desc'] = '<em>Note: This must match an existing '
-    . '<a href="http://support.mediacore.com/customer/portal/articles/'
-    . '869178-what-is-lti-integration-and-how-do-i-set-it-up-" target="_blank">'
-    . 'LTI consumer key</a> in your MediaCore site above.</em>';
+$string['setting_consumer_key_desc'] = '**Note:** This must match an existing LTI consumer key in your MediaCore site.';
 
 $string['setting_shared_secret_label'] = 'Your MediaCore Shared Secret';
 
-$string['setting_shared_secret_desc'] = '<em>Note: This must match the shared secret '
-    . 'from the LTI consumer key in your MediaCore site above.</em>';
+$string['setting_shared_secret_desc'] = '**Note:** This must match an existing LTI consumer shared secret in your MediaCore site.';
 
-$string['host_empty_error'] = 'Your mediacore hostname field is empty. '
-    . 'Please update your plugin config with the correct hostname';
+$string['host_empty_error'] = 'Your mediacore hostname field is empty. Please update your plugin config with the correct hostname';
 
 $string['no_course_id'] = 'Expected a valid course id';
 
-$string['no_lti_config'] = 'Expected some LTI configuration settings. Please '
-    . 'update your MediaCore Package';
+$string['no_lti_config'] = 'Expected some LTI configuration settings. Please update your MediaCore Package';
