@@ -37,4 +37,7 @@ $plugin->component          = 'tinymce_mediacore';
 $plugin->version            = 2014060500;
 $plugin->requires           = 2011033007;
 $plugin->release            = '3.0';
-$plugin->dependencies       = array('local_mediacore' => 2014052100);
+$plugin->dependencies       = array(
+    'local_mediacore' => 2014061800,
+    'filter_mediacore' => 2014061800,
+);
