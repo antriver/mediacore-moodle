@@ -59,7 +59,7 @@ class filter_mediacore extends moodle_text_filter {
         parent::__construct($context, $localconfig);
         $this->_mcore_client = new mediacore_client();
         $host = $this->_mcore_client->get_host();
-        $this->_api1_view_link_re = "/($host)[:0-9]*\/media\/[a-z0-9_-]+\?context_id/";
+        $this->_api1_view_link_re = "/($host)[:0-9]*\/media\/[:a-z0-9_-]+/";
         $this->_api2_view_link_re = "/($host)[:0-9]*\/api2\/media\/[0-9]+\/view/";
     }
 
