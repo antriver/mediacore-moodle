@@ -10,3 +10,7 @@ Session.vim
 ### MediaCore Moodle ###
 /bin/*
 /lib/editor/tinymce/plugins/mediacore/editor_plugin_src.js
+/filter/mediacore/README.md
+/lib/editor/tinymce/plugins/mediacore/README.md
+/local/mediacore/README.md
+/repository/mediacore/README.md
