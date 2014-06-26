@@ -34,9 +34,9 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 $plugin                     = new StdClass();
 $plugin->component          = 'tinymce_mediacore';
-$plugin->version            = 2014060500;
-$plugin->requires           = 2011033007;
-$plugin->release            = '3.0';
+$plugin->version            = 2014062600;
+$plugin->requires           = 2012062500;
+$plugin->release            = '3.0.2';
 $plugin->maturity           = MATURITY_STABLE;
 $plugin->dependencies       = array(
     'local_mediacore' => 2014061800,

@@ -34,10 +34,10 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 $plugin                     = new stdClass();
 $plugin->component          = 'local_mediacore';
-$plugin->version            = 2014061800;
-$plugin->requires           = 2011033007;
-$plugin->release            = '3.0';
+$plugin->version            = 2014062600;
+$plugin->requires           = 2012062500;
+$plugin->release            = '3.0.2';
 $plugin->maturity           = MATURITY_STABLE;
 $plugin->dependencies       = array(
-    'mod_lti' => 2011112900
+    'mod_lti' => 2011112900,
 );
