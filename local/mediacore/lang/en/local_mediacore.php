@@ -32,14 +32,7 @@
 // Plugin settings.
 $string['pluginname'] = 'MediaCore package config';
 
-$string['setting_heading_desc'] = <<<EOT
-These settings customize the method in which your Moodle instance connects to your MediaCore site.
-
-Please see the following [support articles](http://support.mediacore.com/customer/portal/articles/search?q=moodle")
-for complete information on this plugin.
-
-It also may be necessary to purge your Moodle caches after changing these settings.
-EOT;
+$string['setting_heading_desc'] = 'These settings customize the method in which your Moodle instance connects to your MediaCore site.<br/><br/>Please see the following [support articles](http://support.mediacore.com/customer/portal/articles/search?q=moodle") for complete information on this plugin.<br/><br/> It also may be necessary to purge your Moodle caches after changing these settings.<br/><br/>';
 
 $string['setting_host_label'] = 'Your MediaCore Hostname:';
 $string['setting_host_desc'] = '*e.g: demo.mediacore.tv*';
