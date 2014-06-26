@@ -36,46 +36,57 @@ global $CFG;
 require_once $CFG->dirroot. '/local/mediacore/lib.php';
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage(MEDIACORE_PLUGIN_NAME, get_string('pluginname',
-            MEDIACORE_PLUGIN_NAME));
+    $settings = new admin_settingpage(
+            LOCAL_MEDIACORE_PLUGIN_NAME,
+            get_string('pluginname', LOCAL_MEDIACORE_PLUGIN_NAME)
+        );
 
     //heading
-    $setting = new admin_setting_heading(MEDIACORE_SETTINGS_NAME . '/heading',
-            '',
-            get_string('setting_heading_desc', MEDIACORE_PLUGIN_NAME));
-    $setting->plugin = MEDIACORE_SETTINGS_NAME;
+    $setting = new admin_setting_heading(
+            LOCAL_MEDIACORE_PLUGIN_NAME . '/heading',
+            '', get_string('setting_heading_desc', LOCAL_MEDIACORE_PLUGIN_NAME)
+        );
+    $setting->plugin = LOCAL_MEDIACORE_PLUGIN_NAME;
     $settings->add($setting);
 
     //host
     $host_re = '/^(([a-z0-9-]+\.)+([a-z0-9-]{2,})|localhost)(:[0-9]{1,5})*$/';
-    $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME . '/host',
-            get_string('setting_host_label', MEDIACORE_PLUGIN_NAME),
-            get_string('setting_host_desc', MEDIACORE_PLUGIN_NAME),
-            '', $host_re);
-    $setting->plugin = MEDIACORE_SETTINGS_NAME;
+    $setting = new admin_setting_configtext(
+            LOCAL_MEDIACORE_PLUGIN_NAME . '/host',
+            get_string('setting_host_label', LOCAL_MEDIACORE_PLUGIN_NAME),
+            get_string('setting_host_desc', LOCAL_MEDIACORE_PLUGIN_NAME),
+            '', $host_re
+        );
+    $setting->plugin = LOCAL_MEDIACORE_PLUGIN_NAME;
     $settings->add($setting);
 
     //scheme
-    $setting = new admin_setting_configcheckbox(MEDIACORE_SETTINGS_NAME . '/scheme',
-            get_string('setting_scheme_label', MEDIACORE_PLUGIN_NAME),
-            '', MEDIACORE_DEFAULT_SCHEME, 'https', 'http');
-    $setting->plugin = MEDIACORE_SETTINGS_NAME;
+    $setting = new admin_setting_configcheckbox(
+            LOCAL_MEDIACORE_PLUGIN_NAME . '/scheme',
+            get_string('setting_scheme_label', LOCAL_MEDIACORE_PLUGIN_NAME),
+            '', LOCAL_MEDIACORE_DEFAULT_SCHEME, 'https', 'http'
+        );
+    $setting->plugin = LOCAL_MEDIACORE_PLUGIN_NAME;
     $settings->add($setting);
 
     //consumer_key
-    $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME .'/consumer_key',
-            get_string('setting_consumer_key_label', MEDIACORE_PLUGIN_NAME),
-            get_string('setting_consumer_key_desc', MEDIACORE_PLUGIN_NAME),
-            '', PARAM_TEXT);
-    $setting->plugin = MEDIACORE_SETTINGS_NAME;
+    $setting = new admin_setting_configtext(
+            LOCAL_MEDIACORE_PLUGIN_NAME . '/consumer_key',
+            get_string('setting_consumer_key_label', LOCAL_MEDIACORE_PLUGIN_NAME),
+            get_string('setting_consumer_key_desc', LOCAL_MEDIACORE_PLUGIN_NAME),
+            '', PARAM_TEXT
+        );
+    $setting->plugin = LOCAL_MEDIACORE_PLUGIN_NAME;
     $settings->add($setting);
 
     //shared_secret
-    $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME . '/shared_secret',
-            get_string('setting_shared_secret_label', MEDIACORE_PLUGIN_NAME),
-            get_string('setting_shared_secret_desc', MEDIACORE_PLUGIN_NAME),
-            '', PARAM_TEXT);
-    $setting->plugin = MEDIACORE_SETTINGS_NAME;
+    $setting = new admin_setting_configtext(
+            LOCAL_MEDIACORE_PLUGIN_NAME . '/shared_secret',
+            get_string('setting_shared_secret_label', LOCAL_MEDIACORE_PLUGIN_NAME),
+            get_string('setting_shared_secret_desc', LOCAL_MEDIACORE_PLUGIN_NAME),
+            '', PARAM_TEXT
+        );
+    $setting->plugin = LOCAL_MEDIACORE_PLUGIN_NAME;
     $settings->add($setting);
 
     $ADMIN->add('localplugins', $settings);
