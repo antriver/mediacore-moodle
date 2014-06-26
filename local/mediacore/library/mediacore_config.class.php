@@ -62,7 +62,7 @@ class mediacore_config
         $this->_webroot = $CFG->wwwroot;
 
         $records = $DB->get_records('config_plugins',
-            array('plugin' => MEDIACORE_SETTINGS_NAME));
+            array('plugin' => LOCAL_MEDIACORE_PLUGIN_NAME));
 
         if (!empty($records)) {
             foreach ($records as $r) {
@@ -113,7 +113,7 @@ class mediacore_config
      */
     public function get_scheme() {
         if (empty($this->_scheme)) {
-            return MEDIACORE_DEFAULT_SCHEME;
+            return LOCAL_MEDIACORE_DEFAULT_SCHEME;
         }
         return $this->_scheme;
     }

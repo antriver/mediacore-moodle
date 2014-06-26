@@ -359,11 +359,11 @@ class mediacore_client
 
         if (empty($courseid)) {
             throw new Zend_Exception(get_string('no_course_id',
-                MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
+                LOCAL_MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
         }
         if (!$this->_config->has_lti_config()) {
             throw new Zend_Exception(get_string('no_lti_config',
-                MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
+                LOCAL_MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
         }
         $course = $DB->get_record('course', array('id' => (int)$courseid), '*',
             MUST_EXIST);
