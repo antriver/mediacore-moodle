@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component          = 'atto_mediacore';
-$plugin->version            = 2014062600;
+$plugin->version            = 2014072900;
 $plugin->requires           = 2012062500;
 $plugin->release            = '1.0';
 $plugin->maturity           = MATURITY_STABLE;
