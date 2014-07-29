@@ -39,6 +39,12 @@ TinyMCE and Repository plugins into MediaCore's embedded media player.
 integration with MediaCore, allowing you to launch the "MediaCore Chooser" from
 a custom button added to every TinyMCE editor.
 
+**Atto Editor** `(lib/editor/atto/plugins/mediacore)`
+
+* Provides a rich
+integration with MediaCore, allowing you to launch the "MediaCore Chooser" from
+a custom button added to every Atto editor.
+
 ## Plugin Installation/Upgrade ##
 
 Upgrading the MediaCore plugin is done by copying the following folders into
@@ -54,6 +60,11 @@ the correct Moodle directories.
 #### Moodle 2.4: ####
 * Copy `lib/editor/tinymce/plugins/mediacore` **into**
   `path/to/your/moodle/lib/editor/tinymce/plugins/`
+  
+#### Moodle 2.7+: ####
+* Copy `lib/editor/atto/plugins/mediacore` **into**
+  `path/to/your/moodle/lib/editor/atto/plugins/`
+
 
 To finalize the installation you will need to navigate to: `Site administration
 -> Notifications` and click "Check for available updates". Click "Upgrade
@@ -63,7 +74,7 @@ You may be asked to enter any new configuration settings as well.
 
 It's always a good idea to purge the Moodle caches after this step as well :)
 
-## Plugin Configuration ##
+## Base Plugins Configuration ##
 
 ### Local MediaCore package config: ###
 
@@ -91,6 +102,8 @@ This can be turned on by navigating to: `Site administration -> Plugins ->
 Filters -> Manage Filters` and selecting `On` from drop down menu in the
 `active` column next to 'MediaCore media filter'.
 
+## Text Editor Plugins Configuration ##
+
 ### TinyMCE Rich text editor plugin config: ###
 
 #### Moodle 2.3: ####
@@ -112,9 +125,15 @@ Filters -> Manage Filters` and selecting `On` from drop down menu in the
 
 #### Moodle 2.4+: ####
 
-* Once the `lib/editor/tinymce/plugins/mediacore` directory is in place, configuration is automatic.
+* Once the `lib/editor/tinymce/plugins/mediacore` directory is in place, plugin configuration is automatic.
 
-## Plugin Troubleshooting ##
+### Atto Rich text editor plugin config: ###
+
+#### Moodle 2.7+: ####
+
+* Go to `http://your.moodle/admin/settings.php?section=editorsettingsatto` and add a new line containing `mediacore = mediacore`. Put this line in the location that you want the plugin button to appear in the editor. See [Text Editor Toolbar Settings](http://docs.moodle.org/27/en/Text_editor#Toolbar_settings) on how to fine tune Atto's toolbar to your liking.
+
+## Troubleshooting Plugins  ##
 
 To do a clean install we recommend you remove any old versions
 of the MediaCore plugin from your Moodle install. This is done by removing the
@@ -130,14 +149,18 @@ following directories, if they exist:
 #### Moodle 2.4+: ####
 * `path/to/moodle/lib/editor/tinymce/plugins/mediacore`
 
+#### Moodle 2.7+: ####
+* `path/to/moodle/lib/editor/atto/plugins/mediacore`
+
 You will also need to Navigate to: `Site administration ->
 Plugins -> Plugins Overview` and **uninstall** the following MediaCore plugin code
 from the Moodle database:
 
-* `Mediacore package libraries`
-* `Mediacore search`
-* `MediaCore media filter`
-* `MediaCore media picker`
+* `filter_mediacore`
+* `atto_mediacore`
+* `tinymce_mediacore`
+* `repository_mediacore`
+* `local_mediacore` 
 
 ** Note: any previous Moodle/MediaCore settings will be removed when you delete
   or upgrade the MediaCore plugin **
