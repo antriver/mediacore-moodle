@@ -64,7 +64,18 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configcheckbox(
             LOCAL_MEDIACORE_PLUGIN_NAME . '/scheme',
             get_string('setting_scheme_label', LOCAL_MEDIACORE_PLUGIN_NAME),
-            '', LOCAL_MEDIACORE_DEFAULT_SCHEME, 'https', 'http'
+            get_string('setting_scheme_desc', LOCAL_MEDIACORE_PLUGIN_NAME),
+            LOCAL_MEDIACORE_DEFAULT_SCHEME, 'https', 'http'
+        );
+    $setting->plugin = LOCAL_MEDIACORE_PLUGIN_NAME;
+    $settings->add($setting);
+
+    //use auth?
+    $setting = new admin_setting_configcheckbox(
+            LOCAL_MEDIACORE_PLUGIN_NAME . '/use_lti_auth',
+            get_string('setting_use_lti_auth_label', LOCAL_MEDIACORE_PLUGIN_NAME),
+            get_string('setting_use_lti_auth_desc', LOCAL_MEDIACORE_PLUGIN_NAME),
+            LOCAL_MEDIACORE_DEFAULT_USE_LTI_AUTH, true, false
         );
     $setting->plugin = LOCAL_MEDIACORE_PLUGIN_NAME;
     $settings->add($setting);
