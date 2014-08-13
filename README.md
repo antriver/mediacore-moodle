@@ -83,6 +83,7 @@ administration -> Plugins -> Local plugins -> MediaCore package config` and ente
 
 * The `hostname` of your MediaCore site (i.e. demo.mediacore.tv).
 * The `scheme` you wish to launch the Chooser and view embeds from (i.e. HTTP or HTTPS)
+* Whether you want to use `lti_authentication` (i.e. True or False)
 * The name of your `lti consumer key` (this must match a valid LTI consumer in
   your MediaCore site)
 * The secret of your `lti shared secret` (this also must match the secret in the
