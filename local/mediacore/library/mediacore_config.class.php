@@ -50,6 +50,7 @@ class mediacore_config
         '_host',
         '_scheme',
         '_shared_secret',
+        '_use_lti_auth',
         '_version',
     );
 
@@ -88,7 +89,8 @@ class mediacore_config
     public function has_lti_config() {
         return (!empty($this->_host) &&
                 !empty($this->_consumer_key) &&
-                !empty($this->_shared_secret));
+                !empty($this->_shared_secret) &&
+                !empty($this->_use_lti_auth));
     }
 
     /**

@@ -34,6 +34,7 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 define('LOCAL_MEDIACORE_PLUGIN_NAME', 'local_mediacore');
 define('LOCAL_MEDIACORE_DEFAULT_SCHEME', 'https');
+define('LOCAL_MEDIACORE_DEFAULT_USE_LTI_AUTH', true);
 
 $path = dirname(__FILE__) . '/library';
 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
