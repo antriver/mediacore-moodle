@@ -280,6 +280,18 @@ class mediacore_client
     }
 
     /**
+     * Get the unsigned chooser Urlencode
+     * @return string
+     */
+    public function get_unsigned_chooser_url() {
+        $url = $this->get_chooser_url();
+        if ($this->_config->get_use_trusted_embeds()) {
+            $url .= '?use_trusted_embed=true';
+        }
+        return $url;
+    }
+
+    /**
      * Sign and return the LTI-signed chooser endpoint
      *
      * @param string|int $courseid
@@ -334,6 +346,10 @@ class mediacore_client
             'custom_context_id' => $course->idnumber,
             'custom_plugin_info' => $this->_config->get_plugin_info(),
         );
+
+        if ($this->_config->get_use_trusted_embeds()) {
+            $params['custom_use_trusted_embed'] = 'true';
+        }
 
         // Add debug flag for local testing.
         if ((boolean)$CFG->debugdisplay) {
@@ -401,7 +417,7 @@ class mediacore_client
             $params['mcore_chooser_url'] = $this->get_signed_chooser_url(
                 $COURSE->id, $lti_params);
         } else {
-            $params['mcore_chooser_url'] = $this->get_chooser_url();
+            $params['mcore_chooser_url'] = $this->get_unsigned_chooser_url();
         }
         return $params;
     }
