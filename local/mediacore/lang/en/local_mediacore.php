@@ -56,3 +56,6 @@ $string['host_empty_error'] = 'Your mediacore hostname field is empty. Please up
 $string['no_course_id'] = 'Expected a valid course id';
 
 $string['no_lti_config'] = 'Expected some LTI configuration settings. Please update your MediaCore Package';
+
+$string['setting_use_trusted_embeds_label'] = 'Use Trusted Embeds?';
+$string['setting_use_trusted_embeds_desc'] = '**Note:** This setting defines whether or not to use trusted embeds when embedding video urls. Trusted embeds allow users to share content from private collections with other users. Trusted embeds will always require that a user is logged in prior to viewing content.';

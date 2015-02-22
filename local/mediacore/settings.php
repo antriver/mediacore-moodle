@@ -100,5 +100,15 @@ if ($hassiteconfig) {
     $setting->plugin = LOCAL_MEDIACORE_PLUGIN_NAME;
     $settings->add($setting);
 
+    //trusted embeds
+    $setting = new admin_setting_configcheckbox(
+            LOCAL_MEDIACORE_PLUGIN_NAME . '/use_trusted_embeds',
+            get_string('setting_use_trusted_embeds_label', LOCAL_MEDIACORE_PLUGIN_NAME),
+            get_string('setting_use_trusted_embeds_desc', LOCAL_MEDIACORE_PLUGIN_NAME),
+            LOCAL_MEDIACORE_DEFAULT_USE_TRUSTED_EMBEDS, true, false
+        );
+    $setting->plugin = LOCAL_MEDIACORE_PLUGIN_NAME;
+    $settings->add($setting);
+
     $ADMIN->add('localplugins', $settings);
 }

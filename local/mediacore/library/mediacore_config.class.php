@@ -51,6 +51,7 @@ class mediacore_config
         '_scheme',
         '_shared_secret',
         '_use_lti_auth',
+        '_use_trusted_embeds',
         '_version',
     );
 
@@ -134,6 +135,17 @@ class mediacore_config
      */
     public function get_shared_secret() {
         return $this->_shared_secret;
+    }
+
+    /**
+     * Get whether we're using trusted embeds
+     * @return boolean
+     */
+    public function get_use_trusted_embeds() {
+        if (empty($this->_use_trusted_embeds)) {
+            return LOCAL_MEDIACORE_DEFAULT_USE_TRUSTED_EMBEDS;
+        }
+        return (boolean)$this->_use_trusted_embeds;
     }
 
     /**
