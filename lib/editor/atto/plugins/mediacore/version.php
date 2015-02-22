@@ -25,11 +25,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component          = 'atto_mediacore';
-$plugin->version            = 2014072900;
+$plugin->version            = 2015022100;
 $plugin->requires           = 2014041100; //Moodle 2.7
-$plugin->release            = '1.0';
+$plugin->release            = '1.1';
 $plugin->maturity           = MATURITY_STABLE;
 $plugin->dependencies       = array(
-    'local_mediacore' => 2014061800,
-    'filter_mediacore' => 2014061800,
+    'local_mediacore' => 2015022100,
+    'filter_mediacore' => 2015022100,
 );
