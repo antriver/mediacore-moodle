@@ -45,8 +45,9 @@ require_once('mediacore_client.class.php');
 class filter_mediacore extends moodle_text_filter {
 
     private $_mcore_client;
-    private $_api1_public_url_re;
-    private $_api2_public_url_re;
+    private $_re_api1_public_urls;
+    private $_re_api2_public_urls;
+    private $_re_embed_url;
     private $_default_thumb_width = 400;
     private $_default_thumb_height = 225;
 
@@ -59,21 +60,24 @@ class filter_mediacore extends moodle_text_filter {
         parent::__construct($context, $localconfig);
         $this->_mcore_client = new mediacore_client();
         $host = $this->_mcore_client->get_host();
-        $this->_trusted_embed_url_re = "/($host)[:0-9]*\/media\/.*embed_token=.*/";
-        $this->_embed_url_re = "/($host)[:0-9]*\/media\/.*embed_player.*/";
-        $this->_api1_public_url_re = "/($host)[:0-9]*\/media\/[:a-z0-9_-]+/";
-        $this->_api2_public_url_re = "/($host)[:0-9]*\/api2\/media\/[0-9]+\/view/";
+        $this->_re_api1_public_urls = "/($host)[:0-9]*\/media\/[:a-z0-9_-]+/";
+        $this->_re_api2_public_urls = "/($host)[:0-9]*\/api2\/media\/[0-9]+\/view/";
+        $this->_re_embed_url = "/($host)[:0-9]*\/media\/[:a-z0-9_-]+\/embed_player.*/";
     }
 
     /**
      * Filter the page html and look for an <a><img> element added by the chooser
      * or an <a> element added by the moodle file picker
-     * NOTE: An embed from the Chooser and a link from the old filepicker are
-     *   of the same form (see $_api1_public_url_re).
-     * A link from the new repository filepicker plugin is different
-     *   (see $_api2_public_url_re).
-     * The Chooser style link will updated in the future to match the new link
-     *   style.
+     *
+     * NOTE: Thumbnail html from the Chooser and a link from the old filepicker
+     *       are of the same form (see $_re_api1_public_urls).
+     *       A thumbnail link from the new repository filepicker plugin is
+     *       different (see $_re_api2_public_urls).
+     *       The latest version of the local lib and rich text editor plugins
+     *       use both a trusted and a regular embed url as the href value of
+     *       the thumbnail html (this is the preferred route going forward).
+     *       Both types of embed_urls will need a user to be authenticated
+     *       before they can view the embed.
      *
      * @param string $html
      * @param array $options
@@ -95,29 +99,30 @@ class filter_mediacore extends moodle_text_filter {
             if (empty($href)) {
                 continue;
             }
-            if ((boolean)preg_match($this->_trusted_embed_url_re, $href) ||
-                (boolean)preg_match($this->_embed_url_re, $href)) {
-                $href = str_replace('&', '&amp;', $href);
+            if ((boolean)preg_match($this->_re_embed_url, $href)) {
                 $newnode  = $dom->createDocumentFragment();
                 $imgnode = $node->firstChild;
+                $href = str_replace('&', '&amp;', $href);
+                $href = $this->_maybe_lti_sign_url($href, $courseid);
                 extract($this->_get_image_elem_dimensions($imgnode));
                 $html = $this->_get_iframe_embed_html($href, $width, $height);
                 $newnode->appendXML($html);
                 $node->parentNode->replaceChild($newnode, $node);
-            } else if ((boolean)preg_match($this->_api1_public_url_re, $href)) {
+
+            } else if ((boolean)preg_match($this->_re_api1_public_urls, $href)) {
                 $newnode  = $dom->createDocumentFragment();
                 $imgnode = $node->firstChild;
                 extract($this->_get_image_elem_dimensions($imgnode));
-                $html = $this->_get_embed_html_from_api1_view_url(
+                $html = $this->_get_embed_html_from_api1_public_url(
                     $href, $width, $height, $courseid);
                 $newnode->appendXML($html);
                 $node->parentNode->replaceChild($newnode, $node);
 
-            } else if ((boolean)preg_match($this->_api2_public_url_re, $href)) {
+            } else if ((boolean)preg_match($this->_re_api2_public_urls, $href)) {
                 $newnode  = $dom->createDocumentFragment();
                 $width = $this->_default_thumb_width;
                 $height = $this->_default_thumb_height;
-                $html = $this->_get_embed_html_from_api2_view_url(
+                $html = $this->_get_embed_html_from_api2_public_url(
                     $href, $width, $height, $courseid);
                 $newnode->appendXML($html);
                 $node->parentNode->replaceChild($newnode, $node);
@@ -136,7 +141,7 @@ class filter_mediacore extends moodle_text_filter {
         }
         if (empty($width) || empty($height)
             || ($width == 195 && $height == 110)) {
-            // Keep old moodle embeds @ the default size
+            // Keep old moodle embeds at the default size
             $width = $this->_default_thumb_width;
             $height = $this->_default_thumb_height;
         }
@@ -153,7 +158,7 @@ class filter_mediacore extends moodle_text_filter {
      * @param string $href
      * @return string $id
      */
-    private function _get_embed_html_from_api1_view_url($href, $width, $height,
+    private function _get_embed_html_from_api1_public_url($href, $width, $height,
             $courseid=null) {
         $patharr = explode('/', parse_url($href, PHP_URL_PATH));
         $slug = end($patharr);
@@ -167,7 +172,7 @@ class filter_mediacore extends moodle_text_filter {
      * @param string $href
      * @return string $id
      */
-    private function _get_embed_html_from_api2_view_url($href, $width, $height,
+    private function _get_embed_html_from_api2_public_url($href, $width, $height,
         $courseid=null) {
         $patharr = explode('/', parse_url($href, PHP_URL_PATH));
         $id = $patharr[count($patharr) - 2];
@@ -183,32 +188,35 @@ class filter_mediacore extends moodle_text_filter {
      * @param int|null $courseid
      */
     private function _get_embed_html($slug, $width, $height, $courseid=null) {
-
-        $params = array(
-          'iframe' => 'True',
-        );
-
         $embed_url = $this->_mcore_client->get_url('media', $slug, 'embed_player');
+        $embed_url = $this->_maybe_lti_sign_url($embed_url, $courseid);
+        return $this->_get_iframe_embed_html($embed_url, $width, $height);
+    }
+
+    /**
+     * Maybe create an LTI-signed embed url
+     * @param string $embed_url
+     * @return string
+     */
+    private function _maybe_lti_sign_url($embed_url, $courseid=null) {
         if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
+            $pos = strpos($embed_url, '?');
+            if ($pos !== false) {
+                // The url contains query params, so split out the query string
+                // params as an array so we can pass them to the lti signing
+                // method
+                $qs = substr($embed_url, $pos + 1);
+                $params = array();
+                parse_str($qs, $params);
+                $embed_url = substr($embed_url, 0, $pos);
+            }
             $params['context_id'] = $courseid;
             $params = $this->_mcore_client->get_signed_lti_params(
                 $embed_url, 'GET', $courseid, $params
             );
             $embed_url .= '?' . http_build_query($params);
         }
-
-        //NOTE: to get the latest template:
-        //$template_url = $this->_mcore_client->get_url('api2', 'media', 'embed-template');
-        //$result = $this->_mcore_client->get($template_url);
-        //if (empty($result)) {
-            //return $this->_get_embed_error_html($error='Empty result');
-        //}
-        //$json = json_decode($result);
-        //if (empty($json) || !isset($json->html)) {
-            //return $this->_get_embed_error_html($error='Unexpected Json:' . $result);
-        //}
-        //$template = $json->html;
-        return $this->_get_iframe_embed_html($embed_url, $width, $height);
+        return $embed_url;
     }
 
     /**
