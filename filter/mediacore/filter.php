@@ -102,8 +102,11 @@ class filter_mediacore extends moodle_text_filter {
             if ((boolean)preg_match($this->_re_embed_url, $href)) {
                 $newnode  = $dom->createDocumentFragment();
                 $imgnode = $node->firstChild;
-                $href = str_replace('&', '&amp;', $href);
-                $href = $this->_maybe_lti_sign_url($href, $courseid);
+                if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
+                    $href = $this->_maybe_lti_sign_url($href, $courseid);
+                } else {
+                    $href = htmlspecialchars($href) ;
+                }
                 extract($this->_get_image_elem_dimensions($imgnode));
                 $html = $this->_get_iframe_embed_html($href, $width, $height);
                 $newnode->appendXML($html);
