@@ -25,7 +25,7 @@ by the other plugins.
 
 **Repository** `(repository/mediacore)`
 
-* Provides a custom 'repository' file picker as part of Moodle's 
+* Provides a custom 'repository' file picker as part of Moodle's
 built-in media integration.
 
 **Filter** `(filter/mediacore)`
@@ -60,7 +60,7 @@ the correct Moodle directories.
 #### Moodle 2.4: ####
 * Copy `lib/editor/tinymce/plugins/mediacore` **into**
   `path/to/your/moodle/lib/editor/tinymce/plugins/`
-  
+
 #### Moodle 2.7+: ####
 * Copy `lib/editor/atto/plugins/mediacore` **into**
   `path/to/your/moodle/lib/editor/atto/plugins/`
@@ -83,11 +83,13 @@ administration -> Plugins -> Local plugins -> MediaCore package config` and ente
 
 * The `hostname` of your MediaCore site (i.e. demo.mediacore.tv).
 * The `scheme` you wish to launch the Chooser and view embeds from (i.e. HTTP or HTTPS)
-* Whether you want to use `lti_authentication` (i.e. True or False)
+* Whether you want to use `lti authentication` (i.e. True or False)
 * The name of your `lti consumer key` (this must match a valid LTI consumer in
   your MediaCore site)
 * The secret of your `lti shared secret` (this also must match the secret in the
   LTI consumer above)
+* Whether you want to use `trusted embeds` (i.e. True or False). This allows users to 
+  share content from private course collections with other users.
 
 ### Repository configuration setup: ###
 
@@ -161,7 +163,7 @@ from the Moodle database:
 * `atto_mediacore`
 * `tinymce_mediacore`
 * `repository_mediacore`
-* `local_mediacore` 
+* `local_mediacore`
 
 ** Note: any previous Moodle/MediaCore settings will be removed when you delete
   or upgrade the MediaCore plugin **
@@ -174,6 +176,6 @@ Once any old versions have been removed, you can retry the installation steps ab
 
 ## About MediaCore ##
 
-Video is transforming education, and MediaCore helps hundreds of educational institutions around the world embrace it. The MediaCore Video Platform puts powerful video learning and sharing tools into the hands of every student and professor — empowering them to easily capture, manage and share video privately and securely across all platforms and mobile devices. 
+Video is transforming education, and MediaCore helps hundreds of educational institutions around the world embrace it. The MediaCore Video Platform puts powerful video learning and sharing tools into the hands of every student and professor — empowering them to easily capture, manage and share video privately and securely across all platforms and mobile devices.
 
 MediaCore has received a wide range of awards, most recently being recognized by Fast Company as one of the top ten most innovative companies in digital video.
