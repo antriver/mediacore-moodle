@@ -271,6 +271,20 @@ class mediacore_client
     }
 
     /**
+     * Sign and return the LTI-signed chooser js endpoint
+     *
+     * @param string|int $courseid
+     * @param array $lti_params
+     * @return string
+     */
+    public function get_signed_chooser_js_url($courseid, $lti_params=array()) {
+        $url = $this->get_chooser_js_url();
+        return $url . '?' . $this->get_query(
+            $this->get_signed_lti_params($url, 'GET', $courseid, $lti_params)
+        );
+    }
+
+    /**
      * Get the chooser url
      *
      * @return string
@@ -281,6 +295,10 @@ class mediacore_client
 
     /**
      * Get the unsigned chooser Urlencode
+     * NOTE When using trusted embeds without LTI, we
+     *      send append a use_trusted_embed query param
+     *      here.
+     *
      * @return string
      */
     public function get_unsigned_chooser_url() {
@@ -293,6 +311,9 @@ class mediacore_client
 
     /**
      * Sign and return the LTI-signed chooser endpoint
+     * NOTE When using trusted embeds over LTI, we
+     *      send a custom_use_trusted_embed param,
+     *      added in `get_lti_params` method
      *
      * @param string|int $courseid
      * @param array $lti_params
@@ -407,18 +428,20 @@ class mediacore_client
     public function get_tinymce_params() {
         global $COURSE;
 
-        $params['mcore_chooser_js_url'] = $this->get_chooser_js_url();
+        //default non-lti urls
+        $chooser_js_url = $this->get_chooser_js_url();
+        $chooser_url = $this->get_unsigned_chooser_url();
 
         if ($this->has_lti_config() && isset($COURSE->id)) {
-            //for backwards compatibility with non-closure chooser
-            $lti_params = array(
-                'origin' => $this->get_webroot(),
-            );
-            $params['mcore_chooser_url'] = $this->get_signed_chooser_url(
-                $COURSE->id, $lti_params);
-        } else {
-            $params['mcore_chooser_url'] = $this->get_unsigned_chooser_url();
+            //NOTE: Sign the chooser js endpoint only so that the oauth values
+            //      are not regenerated.
+            $chooser_js_url = $this->get_signed_chooser_js_url($COURSE->id);
+            $chooser_url .= (strpos($chooser_url, '?') === false) ? '?' : '&';
+            $chooser_url .= 'context_id=' . $COURSE->id;
         }
+        $params['mcore_chooser_js_url'] = $chooser_js_url;
+        $params['mcore_chooser_url'] = $chooser_url;
+
         return $params;
     }
 
