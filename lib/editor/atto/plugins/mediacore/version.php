@@ -15,7 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'atto_mediacore', language 'en'.
+ *       __  _____________   _______   __________  ____  ______
+ *      /  |/  / ____/ __ \ /  _/   | / ____/ __ \/ __ \/ ____/
+ *     / /|_/ / __/ / / / / / // /| |/ /   / / / / /_/ / __/
+ *    / /  / / /___/ /_/ /_/ // ___ / /___/ /_/ / _, _/ /___
+ *   /_/  /_/_____/_____//___/_/  |_\____/\____/_/ |_/_____/
  *
  * @package    atto_mediacore
  * @copyright  2014 MediaCore <info@mediacore.com>
@@ -24,12 +28,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$plugin                     = new StdClass();
 $plugin->component          = 'atto_mediacore';
-$plugin->version            = 2015022100;
+$plugin->version            = 2015032500;
 $plugin->requires           = 2014041100; //Moodle 2.7
-$plugin->release            = '1.1';
+$plugin->release            = '1.2';
 $plugin->maturity           = MATURITY_STABLE;
 $plugin->dependencies       = array(
-    'local_mediacore' => 2015022100,
+    'local_mediacore' => 2015032500,
     'filter_mediacore' => 2015022100,
 );

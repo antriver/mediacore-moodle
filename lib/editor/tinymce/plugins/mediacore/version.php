@@ -21,8 +21,6 @@
  *    / /  / / /___/ /_/ /_/ // ___ / /___/ /_/ / _, _/ /___
  *   /_/  /_/_____/_____//___/_/  |_\____/\____/_/ |_/_____/
  *
- * MediaCore filter
- *
  * @package    tinymce_mediacore
  * @subpackage tinymce
  * @copyright  2012 MediaCore Technologies
@@ -34,11 +32,11 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 $plugin                     = new StdClass();
 $plugin->component          = 'tinymce_mediacore';
-$plugin->version            = 2015022100;
+$plugin->version            = 2015032500;
 $plugin->requires           = 2012062500;
-$plugin->release            = '3.0.4';
+$plugin->release            = '3.0.5';
 $plugin->maturity           = MATURITY_STABLE;
 $plugin->dependencies       = array(
-    'local_mediacore' => 2015022100,
+    'local_mediacore' => 2015032500,
     'filter_mediacore' => 2015022100,
 );
