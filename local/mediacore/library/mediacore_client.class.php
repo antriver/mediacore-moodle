@@ -296,8 +296,7 @@ class mediacore_client
     /**
      * Get the unsigned chooser Urlencode
      * NOTE When using trusted embeds without LTI, we
-     *      send append a use_trusted_embed query param
-     *      here.
+     *      append a use_trusted_embed query param here.
      *
      * @return string
      */
@@ -311,7 +310,7 @@ class mediacore_client
 
     /**
      * Sign and return the LTI-signed chooser endpoint
-     * NOTE When using trusted embeds over LTI, we
+     * NOTE When using trusted embeds with LTI, we
      *      send a custom_use_trusted_embed param,
      *      added in `get_lti_params` method
      *
