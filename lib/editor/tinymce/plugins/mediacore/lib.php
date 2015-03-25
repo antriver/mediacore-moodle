@@ -70,7 +70,7 @@ class tinymce_mediacore extends editor_tinymce_plugin
         }
 
         $mcore_client = new mediacore_client();
-        $params = $params + $mcore_client->get_tinymce_params();
+        $params = $params + $mcore_client->get_texteditor_params();
         $numrows = $this->count_button_rows($params);
         $this->add_button_after($params, $numrows, '|,mediacore');
 

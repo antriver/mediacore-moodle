@@ -421,11 +421,11 @@ class mediacore_client
     }
 
     /**
-     * Get the custom tinymce params
+     * Get the custom atto/tinymce params
      *
      * @return array
      */
-    public function get_tinymce_params() {
+    public function get_texteditor_params() {
         global $COURSE;
 
         //default non-lti urls
@@ -436,6 +436,7 @@ class mediacore_client
             //NOTE: Sign the chooser js endpoint only so that the oauth values
             //      are not regenerated.
             $chooser_js_url = $this->get_signed_chooser_js_url($COURSE->id);
+            // append the context_id to the chooser endpoint
             $chooser_url .= (strpos($chooser_url, '?') === false) ? '?' : '&';
             $chooser_url .= 'context_id=' . $COURSE->id;
         }
@@ -465,7 +466,7 @@ class mediacore_client
             $filters = filter_get_active_in_context($context);
         }
         if (array_key_exists('filter/mediacore', $filters)) {
-            $params = $params + $this->get_tinymce_params();
+            $params = $params + $this->get_texteditor_params();
             $params['plugins'] .= ',mediacore';
             if (isset($params['theme_advanced_buttons3_add'])) {
                 $params['theme_advanced_buttons3_add'] .= ",|,mediacore";

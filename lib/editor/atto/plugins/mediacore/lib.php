@@ -53,7 +53,7 @@ function atto_mediacore_params_for_js() {
     //NOTE: the params used for the tinymce editor plugin and
     //  the atto editor plugin are the same
     $client = new mediacore_client();
-    $params = $client->get_tinymce_params();
+    $params = $client->get_texteditor_params();
 
     return array(
         'chooser_js_url' => $params['mcore_chooser_js_url'],
