@@ -368,6 +368,9 @@ class mediacore_client
             'custom_plugin_info' => $this->_config->get_plugin_info(),
         );
 
+        // NOTE: For LTI launches we use a custom_use_trusted_embed
+        //       param. For non-LTI launches we append use_trusted_embed
+        //       as a query param. See `get_signed_chooser_url`
         if ($this->_config->get_use_trusted_embeds()) {
             $params['custom_use_trusted_embed'] = 'true';
         }
