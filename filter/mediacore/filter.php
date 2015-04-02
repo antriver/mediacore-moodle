@@ -103,7 +103,7 @@ class filter_mediacore extends moodle_text_filter {
                 $newnode  = $dom->createDocumentFragment();
                 $imgnode = $node->firstChild;
                 if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
-                    $href = $this->_maybe_lti_sign_url($href, $courseid);
+                    $href = $this->_generate_embed_url($href, $courseid);
                 } else {
                     $href = htmlspecialchars($href) ;
                 }
@@ -191,18 +191,22 @@ class filter_mediacore extends moodle_text_filter {
      * @param int|null $courseid
      */
     private function _get_embed_html($slug, $width, $height, $courseid=null) {
+        global $CFG;
+
         $embed_url = $this->_mcore_client->get_url('media', $slug, 'embed_player');
-        $embed_url = $this->_maybe_lti_sign_url($embed_url, $courseid);
+        $embed_url = $this->_generate_embed_url($embed_url, $courseid);
         return $this->_get_iframe_embed_html($embed_url, $width, $height);
     }
 
     /**
-     * Maybe create an LTI-signed embed url
+     * Create an embed url
      * @param string $embed_url
      * @return string
      */
-    private function _maybe_lti_sign_url($embed_url, $courseid=null) {
-        if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
+    private function _generate_embed_url($embed_url, $courseid=null) {
+        global $CFG;
+
+        if (!is_null($courseid)) {
             $pos = strpos($embed_url, '?');
             if ($pos !== false) {
                 // The url contains query params, so split out the query string
@@ -214,10 +218,11 @@ class filter_mediacore extends moodle_text_filter {
                 $embed_url = substr($embed_url, 0, $pos);
             }
             $params['context_id'] = $courseid;
-            $params = $this->_mcore_client->get_signed_lti_params(
-                $embed_url, 'GET', $courseid, $params
-            );
             $embed_url .= '?' . http_build_query($params);
+
+            $mcore_host = $this->_mcore_client->get_host();
+            $content_url = $CFG->wwwroot.'/filter/mediacore/sign.php';
+            $embed_url = str_replace('https://'.$mcore_host, $content_url, $embed_url);
         }
         return $embed_url;
     }
