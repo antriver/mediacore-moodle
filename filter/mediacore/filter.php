@@ -206,23 +206,21 @@ class filter_mediacore extends moodle_text_filter {
     private function _generate_embed_url($embed_url, $courseid=null) {
         global $CFG;
 
-        if (!is_null($courseid)) {
+        if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
             $pos = strpos($embed_url, '?');
             if ($pos !== false) {
-                // The url contains query params, so split out the query string
-                // params as an array so we can pass them to the lti signing
-                // method
+                // Add the context_id to the query params
                 $qs = substr($embed_url, $pos + 1);
                 $params = array();
                 parse_str($qs, $params);
                 $embed_url = substr($embed_url, 0, $pos);
-            }
-            $params['context_id'] = $courseid;
-            $embed_url .= '?' . http_build_query($params);
+                $params['context_id'] = $courseid;
+                $embed_url .= '?' . http_build_query($params);
 
-            $mcore_host = $this->_mcore_client->get_host();
-            $content_url = $CFG->wwwroot.'/filter/mediacore/sign.php';
-            $embed_url = str_replace('https://'.$mcore_host, $content_url, $embed_url);
+                $site_url = $this->_mcore_client->get_siteurl();
+                $content_url = $CFG->wwwroot.'/filter/mediacore/sign.php';
+                $embed_url = str_replace($site_url, $content_url, $embed_url);
+            }
         }
         return $embed_url;
     }
