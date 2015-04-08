@@ -1,5 +1,7 @@
 <?php
-require_once('../../config.php');
+require_once(realpath($_SERVER['DOCUMENT_ROOT']) . '/config.php');
+defined('MOODLE_INTERNAL') || die('Invalid access');
+
 require_once $CFG->dirroot . '/local/mediacore/lib.php';
 require_once('mediacore_client.class.php');
 
