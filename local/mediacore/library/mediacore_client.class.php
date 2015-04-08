@@ -348,6 +348,14 @@ class mediacore_client
         $user_full = trim($user_given . ' ' . $user_family);
         $user_email = (isset($USER->email)) ? $USER->email: '';
 
+        if (strpos($CFG->release, '2.8') === false) {
+            $roles = lti_get_ims_role($USER, 0, $course->id);
+        } else {
+            // NOTE: Moodle 2.8 adds support for specifying whether this is
+            //       an LTI 2.0 launch.
+            $roles = lti_get_ims_role($USER, 0, $course->id, false);
+        }
+
         $params = array(
             'context_id' => $course->id,
             'context_label' => $course->shortname,
@@ -359,7 +367,7 @@ class mediacore_client
             'lis_person_contact_email_primary' => $user_email,
             'lti_message_type' => 'basic-lti-launch-request',
             'lti_version' => 'LTI-1p0',
-            'roles' => lti_get_ims_role($USER, 0, $course->id),
+            'roles' => $roles,
             'tool_consumer_info_product_family_code' => 'moodle',
             'tool_consumer_info_version' => (string)$CFG->version,
             'user_id' => $USER->id,
