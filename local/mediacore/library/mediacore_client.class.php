@@ -441,19 +441,20 @@ class mediacore_client
         //default non-lti urls
         $chooser_js_url = $this->get_chooser_js_url();
         $chooser_url = $this->get_unsigned_chooser_url();
+        $launch_url = null;
 
-        $params['mcore_host_url'] = $this->get_siteurl();
         if ($this->has_lti_config() && isset($COURSE->id)) {
             $chooser_js_url = $this->get_chooser_js_url($COURSE->id);
             // append the context_id to the chooser endpoint
             $chooser_url .= (strpos($chooser_url, '?') === false) ? '?' : '&';
             $chooser_url .= 'context_id=' . $COURSE->id;
-            $site_url = $params['mcore_host_url'];
+            $site_url = $this->get_siteurl();
             $content_url = $CFG->wwwroot.'/local/mediacore/sign.php';
-            $chooser_url = str_replace($site_url, $content_url, $chooser_url);
+            $launch_url = str_replace($site_url, $content_url, $chooser_url);
         }
         $params['mcore_chooser_js_url'] = $chooser_js_url;
         $params['mcore_chooser_url'] = $chooser_url;
+        $params['mcore_launch_url'] = $launch_url;
 
         return $params;
     }
