@@ -59,5 +59,6 @@ function atto_mediacore_params_for_js() {
         'chooser_js_url' => $params['mcore_chooser_js_url'],
         'url' => $params['mcore_chooser_url'],
         'mode' => 'popup',
+        'mcore_host' => $params['mcore_host_url'],
     );
 }

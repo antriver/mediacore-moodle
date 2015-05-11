@@ -219,7 +219,7 @@ class filter_mediacore extends moodle_text_filter {
             $embed_url .= '?' . http_build_query($params);
 
             $site_url = $this->_mcore_client->get_siteurl();
-            $content_url = $CFG->wwwroot.'/filter/mediacore/sign.php';
+            $content_url = $CFG->wwwroot.'/local/mediacore/sign.php';
             $embed_url = str_replace($site_url, $content_url, $embed_url);
         }
         return $embed_url;

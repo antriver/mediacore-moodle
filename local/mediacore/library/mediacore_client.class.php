@@ -436,19 +436,21 @@ class mediacore_client
      * @return array
      */
     public function get_texteditor_params() {
-        global $COURSE;
+        global $COURSE, $CFG;
 
         //default non-lti urls
         $chooser_js_url = $this->get_chooser_js_url();
         $chooser_url = $this->get_unsigned_chooser_url();
 
+        $params['mcore_host_url'] = $this->get_siteurl();
         if ($this->has_lti_config() && isset($COURSE->id)) {
-            //NOTE: Sign the chooser js endpoint only so that the oauth values
-            //      are not regenerated.
-            $chooser_js_url = $this->get_signed_chooser_js_url($COURSE->id);
+            $chooser_js_url = $this->get_chooser_js_url($COURSE->id);
             // append the context_id to the chooser endpoint
             $chooser_url .= (strpos($chooser_url, '?') === false) ? '?' : '&';
             $chooser_url .= 'context_id=' . $COURSE->id;
+            $site_url = $params['mcore_host_url'];
+            $content_url = $CFG->wwwroot.'/local/mediacore/sign.php';
+            $chooser_url = str_replace($site_url, $content_url, $chooser_url);
         }
         $params['mcore_chooser_js_url'] = $chooser_js_url;
         $params['mcore_chooser_url'] = $chooser_url;
