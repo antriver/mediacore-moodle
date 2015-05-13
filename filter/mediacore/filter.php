@@ -208,19 +208,19 @@ class filter_mediacore extends moodle_text_filter {
 
         if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
             $pos = strpos($embed_url, '?');
+            $params = array();
             if ($pos !== false) {
                 // Add the context_id to the query params
                 $qs = substr($embed_url, $pos + 1);
-                $params = array();
                 parse_str($qs, $params);
                 $embed_url = substr($embed_url, 0, $pos);
-                $params['context_id'] = $courseid;
-                $embed_url .= '?' . http_build_query($params);
-
-                $site_url = $this->_mcore_client->get_siteurl();
-                $content_url = $CFG->wwwroot.'/filter/mediacore/sign.php';
-                $embed_url = str_replace($site_url, $content_url, $embed_url);
             }
+            $params['context_id'] = $courseid;
+            $embed_url .= '?' . http_build_query($params);
+
+            $site_url = $this->_mcore_client->get_siteurl();
+            $content_url = $CFG->wwwroot.'/local/mediacore/sign.php';
+            $embed_url = str_replace($site_url, $content_url, $embed_url);
         }
         return $embed_url;
     }

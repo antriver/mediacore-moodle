@@ -32,11 +32,11 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 $plugin                     = new StdClass();
 $plugin->component          = 'tinymce_mediacore';
-$plugin->version            = 2015032500;
+$plugin->version            = 2015051200;
 $plugin->requires           = 2012062500;
-$plugin->release            = '3.0.5';
+$plugin->release            = '3.0.7';
 $plugin->maturity           = MATURITY_STABLE;
 $plugin->dependencies       = array(
-    'local_mediacore' => 2015032500,
-    'filter_mediacore' => 2015022100,
+    'local_mediacore'  => 2015051200,
+    'filter_mediacore' => 2015051200,
 );
