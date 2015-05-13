@@ -30,9 +30,9 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin                     = new StdClass();
 $plugin->component          = 'atto_mediacore';
-$plugin->version            = 2015032500;
+$plugin->version            = 2015051200;
 $plugin->requires           = 2014041100; //Moodle 2.7
-$plugin->release            = '1.2';
+$plugin->release            = '1.3';
 $plugin->maturity           = MATURITY_STABLE;
 $plugin->dependencies       = array(
     'local_mediacore' => 2015032500,
