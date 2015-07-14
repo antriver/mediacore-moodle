@@ -14,11 +14,3 @@ Session.vim
 /lib/editor/tinymce/plugins/mediacore/README.md
 /local/mediacore/README.md
 /repository/mediacore/README.md
-
-# Composer packages #
-/vendor/
-!/vencor/composer
-!/vencor/mediacore
-!/vencor/rmccue
-!/vencor/zendframework
-!/vencor/autoload.php
