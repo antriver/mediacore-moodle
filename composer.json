@@ -1,0 +1,15 @@
+{
+    "name": "mediacore/moodle",
+    "require": {
+        "mediacore/mediacore-client-php": "^1.0"
+    },
+    "require-dev": {
+        "psy/psysh": "^0.5.1"
+    },
+    "authors": [
+        {
+            "name": "Derek Harnanansingh",
+            "email": "derek@mediacore.com"
+        }
+    ]
+}
