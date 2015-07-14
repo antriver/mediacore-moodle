@@ -11,5 +11,10 @@
             "name": "Derek Harnanansingh",
             "email": "derek@mediacore.com"
         }
-    ]
+    ],
+    "autoload": {
+        "classmap": [
+            "src"
+        ]
+    }
 }
