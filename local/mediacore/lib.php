@@ -37,5 +37,7 @@ define('LOCAL_MEDIACORE_DEFAULT_SCHEME', 'https');
 define('LOCAL_MEDIACORE_DEFAULT_USE_LTI_AUTH', true);
 define('LOCAL_MEDIACORE_DEFAULT_USE_TRUSTED_EMBEDS', false);
 
-$path = dirname(__FILE__) . '/library';
-set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+$loader = require realpath(dirname(__FILE__) . '/../../vendor/autoload.php');
+$lib_dir = realpath(dirname(__FILE__) . '/library');
+$loader->add('mediacore', $lib_dir);
+var_dump($loader);
