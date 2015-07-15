@@ -34,9 +34,6 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 global $CFG;
 require_once $CFG->dirroot. '/mod/lti/locallib.php';
-require_once 'Zend/Uri/Http.php';
-require_once 'Zend/Exception.php';
-require_once 'mediacore_config.class.php';
 
 
 /**

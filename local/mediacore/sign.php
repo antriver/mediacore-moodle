@@ -3,7 +3,6 @@ require_once('../../../moodle/config.php');
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
 require_once $CFG->dirroot . '/local/mediacore/lib.php';
-require_once('mediacore_client.class.php');
 
 $url = $_SERVER['REQUEST_URI'];
 $mcore_client = new mediacore_client();
