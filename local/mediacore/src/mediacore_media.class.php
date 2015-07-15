@@ -34,9 +34,6 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 global $CFG;
 require_once $CFG->dirroot . '/lib/filelib.php';
-require_once 'mediacore_config.class.php';
-require_once 'mediacore_client.class.php';
-require_once 'mediacore_media_rowset.class.php';
 
 
 /**
