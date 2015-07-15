@@ -118,11 +118,10 @@ class Client
         $path = '';
         $args = array_filter(func_get_args());
         if (is_array($args) && !empty($args)) {
-            $path = '/'. implode('/', $args);
+            $path .= '/'. implode('/', $args);
         }
         $uri = clone $this->_uri;
-        $uri->setPath($path);
-        return $uri->toString();
+        return $uri->setPath($path)->toString();
     }
 
     /**
@@ -188,7 +187,7 @@ class Client
      */
     public function delete($url, $headers=array(), $options=array())
     {
-        return $this->send($url, self::DELETE, null, $headers, $options);
+        return $this->send($url, self::DELETE, /* data */ null, $headers, $options);
     }
 
     /**

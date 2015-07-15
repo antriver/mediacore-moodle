@@ -124,6 +124,30 @@ class Response
     }
 
     /**
+     * Get the CSRF token from the authtkt Cookie
+     *
+     * @return string|null
+     */
+    public function getCsrfToken()
+    {
+        $authtkt = $this->getCookie('authtkt');
+        $cookieParts = explode('!', $authtkt);
+        $csrfToken = null;
+        if (count($cookieParts != 3)) {
+            return $csrfToken;
+        }
+        $tokens = explode('&', $cookieParts[2]);
+        foreach ($tokens as $token) {
+            if (strpos($token, 'csrf') !== false) {
+                $csrfStr = explode('~', $token);
+                $csrfToken = $csrfStr[1];
+                break;
+            }
+        }
+        return $csrfToken;
+    }
+
+    /**
      *
      * @return object|null
      */

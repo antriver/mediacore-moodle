@@ -310,4 +310,22 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $uri = new Uri($url);
         $this->assertEquals($url, $uri->toString());
     }
+
+    /**
+     * @covers MediaCore\Uri::normalizePath
+     */
+    public function testNormalizePath()
+    {
+        $url = 'http://example.com';
+
+        $uri = new Uri($url);
+        $expected = '/api2';
+        $path = '/api2//';
+        $this->assertEquals($expected, $uri->normalizePath($path));
+
+        $uri = new Uri($url);
+        $expected = '';
+        $path = '';
+        $this->assertEquals($expected, $uri->normalizePath($path));
+    }
 }

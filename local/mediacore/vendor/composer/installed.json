@@ -272,17 +272,17 @@
     },
     {
         "name": "mediacore/mediacore-client-php",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
+        "version": "1.0.2",
+        "version_normalized": "1.0.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/mediacore/mediacore-client-php.git",
-            "reference": "27aa5487b24b27be11dfbcecdc209666b056bbe7"
+            "reference": "072ac8864d3e26bcce37715f48492991cb2cbf7d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mediacore/mediacore-client-php/zipball/27aa5487b24b27be11dfbcecdc209666b056bbe7",
-            "reference": "27aa5487b24b27be11dfbcecdc209666b056bbe7",
+            "url": "https://api.github.com/repos/mediacore/mediacore-client-php/zipball/072ac8864d3e26bcce37715f48492991cb2cbf7d",
+            "reference": "072ac8864d3e26bcce37715f48492991cb2cbf7d",
             "shasum": ""
         },
         "require": {
@@ -295,7 +295,7 @@
             "phpunit/phpunit": ">=4.1",
             "psy/psysh": "~0.1"
         },
-        "time": "2015-04-28 03:16:22",
+        "time": "2015-07-15 02:47:18",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

@@ -1,7 +1,7 @@
 {
     "name": "mediacore/moodle",
     "require": {
-        "mediacore/mediacore-client-php": "^1.0"
+        "mediacore/mediacore-client-php": "*"
     },
     "require-dev": {
         "psy/psysh": "^0.5.1"
