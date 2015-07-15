@@ -75,12 +75,6 @@ class mediacore_client
     }
 
     /**
-     */
-    public function get_auth() {
-        return $this->_auth;
-    }
-
-    /**
      * Get the mediacore site host
      * w/o the port
      *
@@ -271,11 +265,24 @@ class mediacore_client
 
     /**
      * Whether the config is setup for lti
-     *
      * @return boolean
      */
     public function has_lti_config() {
         return $this->_config->has_lti_config();
+    }
+
+    /**
+     * Return an LTI signed Url
+     * @param string $courseid
+     * @param string $url
+     * @param string $method
+     * @return string
+     */
+    public function get_lti_signed_url($courseid, $url, $method='GET') {
+        $lti_params = $mcore_client->get_lti_params($courseid);
+        return $this->_auth->buildRequestUrl(
+            $url, 'GET', $this->get_lti_params($courseid)
+        );
     }
 
     /**

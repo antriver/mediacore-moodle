@@ -20,13 +20,11 @@ if ($pos === false) {
 $qs = substr($url, $pos + 1);
 $params = array();
 parse_str($qs, $params);
-$url = substr($url, 0, $pos);
 
-$courseid = $params['context_id'];
+$url = substr($url, 0, $pos);
 $site_url = $mcore_client->get_siteurl();
 $url = str_replace($_SERVER['SCRIPT_NAME'], $site_url, $url);
 
-$auth = $mcore_client->get_auth();
-$lti_params = $mcore_client->get_lti_params($courseid);
-$signed_url = $auth->buildRequestUrl($url, 'GET', $lti_params);
+$courseid = $params['context_id'];
+$signed_url = $mcore_client->get_lti_signed_url($courseid, $url, 'GET');
 redirect($signed_url);
