@@ -1,9 +1,8 @@
 <?php
-require_once('../../config.php');
+require_once('../../../moodle/config.php');
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
 require_once $CFG->dirroot . '/local/mediacore/lib.php';
-require_once('mediacore_client.class.php');
 
 $url = $_SERVER['REQUEST_URI'];
 $mcore_client = new mediacore_client();
@@ -21,14 +20,11 @@ if ($pos === false) {
 $qs = substr($url, $pos + 1);
 $params = array();
 parse_str($qs, $params);
-$url = substr($url, 0, $pos);
 
-$courseid = $params['context_id'];
+$url = substr($url, 0, $pos);
 $site_url = $mcore_client->get_siteurl();
 $url = str_replace($_SERVER['SCRIPT_NAME'], $site_url, $url);
 
-$params = $mcore_client->get_signed_lti_params(
-    $url, 'GET', $courseid, $params
-);
-$url .= '?' . http_build_query($params);
-redirect($url);
+$courseid = $params['context_id'];
+$signed_url = $mcore_client->get_lti_signed_url($courseid, $url, 'GET');
+redirect($signed_url);

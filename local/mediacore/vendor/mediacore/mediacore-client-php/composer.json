@@ -1,0 +1,40 @@
+{
+	"name": "mediacore/mediacore-client-php",
+	"description": "A set of OAuth, LTI, and Client libraries to interface with MediaCore's API",
+	"keywords": ["mediacore","php"],
+	"homepage": "https://github.com/mediacore/mediacore-client-php",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "MediaCore",
+			"email": "support@mediacore.com",
+			"homepage": "http://mediacore.com"
+		}
+	],
+	"support": {
+		"email": "support@mediacore.com",
+		"source": "https://github.com/mediacore/mediacore-client-php"
+	},
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://packages.zendframework.com/"
+		}
+	],
+	"require": {
+		"php": ">=5.2",
+		"rmccue/requests": "1.6.1",
+		"zendframework/zend-uri": "2.3.1"
+	},
+	"require-dev": {
+		"phpunit/phpunit": ">=4.1",
+		"psy/psysh": "~0.1",
+		"apigen/apigen": "2.8.0"
+	},
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	},
+	"prefer-stable": true
+}
