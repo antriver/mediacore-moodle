@@ -42,10 +42,10 @@ require_once $CFG->dirroot. '/mod/lti/locallib.php';
  */
 class mediacore_client
 {
-    private $_chooser_js_path = '/api/chooser.js';
-    private $_chooser_path = '/chooser';
+    private $_auth;
     private $_config;
-    private $_uri;
+    private $_key;
+    private $_secret;
 
     /**
      * Constructor
@@ -53,13 +53,16 @@ class mediacore_client
     public function __construct() {
         $this->_config = new mediacore_config();
 
-        // We have to use the fromString method because the 'host' we pass in
-        // may actually contain a port (e.g. 'blah.com:8080' not just 'blah.com')
-        // so we can't just pass it to Zend_Uri_Http.setHost(), like one might
-        // expect
         $url = $this->_config->get_scheme() . '://' .
                 $this->_config->get_host();
-        $this->_uri = Zend_Uri_Http::fromString($url);
+        $this->_client = new MediaCore\Http\Client($url);
+
+        $this->_key = $this->_config->get_consumer_key();
+        $this->_secret = $this->_config->get_shared_secret();
+
+        if ($this->has_lti_config()) {
+            $this->_auth = new MediaCore\Auth\Lti($this->_key, $this->_secret);
+        }
     }
 
     /**
@@ -72,12 +75,9 @@ class mediacore_client
     }
 
     /**
-     * Get the mediacore site url scheme
-     *
-     * @return string|boolean
      */
-    public function get_scheme() {
-        return $this->_uri->getScheme();
+    public function get_auth() {
+        return $this->_auth;
     }
 
     /**
@@ -87,29 +87,7 @@ class mediacore_client
      * @return string
      */
     public function get_host() {
-        return $this->_uri->getHost();
-    }
-
-    /**
-     * Get the mediacore site port
-     *
-     * @return string|boolean
-     */
-    public function get_port() {
-        return $this->_uri->getPort();
-    }
-
-    /**
-     * Get the mediacore site url host and port
-     *
-     * @return string
-     */
-    public function get_host_and_port() {
-        $val = $this->get_host();
-        if ($this->get_port()) {
-            $val .= ':' . $this->get_port();
-        }
-        return $val;
+        return $this->_config->get_host();
     }
 
     /**
@@ -118,7 +96,7 @@ class mediacore_client
      * @return string
      */
     public function get_siteurl() {
-        return $this->_uri->getUri();
+        return $this->_client->getUrl();
     }
 
     /**
@@ -130,11 +108,7 @@ class mediacore_client
      */
     public function get_url() {
         $args = func_get_args();
-        $url = $this->get_siteurl();
-        if (is_array($args) && !empty($args)) {
-            $url .= '/' . implode('/', $args);
-        }
-        return $url;
+        return $this->_client->etUrl($args);
     }
 
     /**
@@ -144,11 +118,7 @@ class mediacore_client
      * @return array
      */
     public function get_query($params) {
-        $encoded_params = '';
-        foreach ($params as $k => $v) {
-            $encoded_params .= "$k=" . urlencode($v) . "&";
-        }
-        return substr($encoded_params, 0, -1);
+        return $this->_client->getQuery($params);
     }
 
     /**
@@ -160,7 +130,7 @@ class mediacore_client
      * @return mixed
      */
     public function get($url, $options=array(), $headers=array()) {
-        return $this->_send($url, 'GET', null, $options, $headers);
+        return $this->_client->get($url, $headers, $options);
     }
 
     /**
@@ -173,58 +143,7 @@ class mediacore_client
      * @return mixed
      */
     public function post($url, $data, $options=array(), $headers=array()) {
-        return $this->_send($url, 'POST', $data, $options, $headers);
-    }
-
-    /**
-     * Send a curl GET or POST request
-     *
-     * @param string $url
-     * @param string $method
-     * @param array $data
-     * @param array $options
-     * @param array $headers
-     * @return string|boolean
-     */
-    private function _send($url, $method='GET', $data=null, $options=array(),
-        $headers=array()) {
-
-        global $CFG;
-
-        // Set the curl options
-        $default_options = array(
-            CURLOPT_HEADER => false,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 4,
-            CURLOPT_URL => $url,
-        );
-        if ((boolean)$CFG->debugdisplay) {
-            $default_options[CURLOPT_SSL_VERIFYHOST] = false;
-            $default_options[CURLOPT_SSL_VERIFYPEER] = false;
-        }
-        $options = array_replace($default_options, (array)$options);
-
-        // Set POST request opts if necessary
-        $options[CURLOPT_POST] = false;
-        unset($options[CURLOPT_POSTFIELDS]);
-        if ($method == 'POST' && !empty($data)) {
-            $options[CURLOPT_POST] = true;
-            $options[CURLOPT_POSTFIELDS] = $data;
-        }
-
-        // Build the curl headers
-        // Disallow passing headers in the options arg
-        unset($options[CURLOPT_HTTPHEADER]);
-        if (!empty($headers)) {
-            $options[CURLOPT_HTTPHEADER] = (array)$headers;
-        }
-
-        $ch = curl_init();
-        curl_setopt_array($ch, $options);
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        return $result;
+        return $this->_client->post($url, $data, $headers, $options);
     }
 
     /**
@@ -234,28 +153,20 @@ class mediacore_client
      * @param int $courseid
      * @return string
      */
-    public function get_auth_cookie($courseid) {
+    public function get_authtkt($courseid) {
         global $CFG;
 
-        $authtkt_url = $this->get_url('api2', 'lti', 'authtkt');
-        $signed_lti_params = $this->get_signed_lti_params(
-            $authtkt_url, 'POST', $courseid);
+        $authtkt_url = $this->_client->getUrl('api2', 'lti', 'authtkt');
 
-        $options = array(
-            CURLOPT_HEADER => true,
-        );
-        $result = $this->_send($authtkt_url, 'POST', $signed_lti_params, $options);
+        if ($this->has_lti_config()) {
+            $lti_params = $this->get_lti_params($courseid);
+            $this->_client->setAuth($this->_auth);
+            $response = $this->_client->post($authtkt_url, $lti_params);
+            $this->_client->clearAuth();
+        }
 
-        if (empty($result)) {
-            return $result;
-        }
-        // parse the cookie from the header
-        $cookie_str = '';
-        preg_match('/^Set-Cookie:\s*([^;]*)/mi', $result, $matches);
-        if (isset($matches[1])) {
-            $cookie_str = rtrim($matches[1]);
-        }
-        return $cookie_str;
+        $authtkt = $response->getCookie();
+        return $authtkt;
     }
 
     /**
@@ -264,21 +175,7 @@ class mediacore_client
      * @return string
      */
     public function get_chooser_js_url() {
-        return $this->get_siteurl() . $this->_chooser_js_path;
-    }
-
-    /**
-     * Sign and return the LTI-signed chooser js endpoint
-     *
-     * @param string|int $courseid
-     * @param array $lti_params
-     * @return string
-     */
-    public function get_signed_chooser_js_url($courseid, $lti_params=array()) {
-        $url = $this->get_chooser_js_url();
-        return $url . '?' . $this->get_query(
-            $this->get_signed_lti_params($url, 'GET', $courseid, $lti_params)
-        );
+        return $this->_client->getUrl('api', 'chooser.js');
     }
 
     /**
@@ -287,7 +184,7 @@ class mediacore_client
      * @return string
      */
     public function get_chooser_url() {
-        return  $this->get_siteurl() . $this->_chooser_path;
+        return  $this->_client->getUrl('chooser');
     }
 
     /**
@@ -306,23 +203,6 @@ class mediacore_client
     }
 
     /**
-     * Sign and return the LTI-signed chooser endpoint
-     * NOTE When using trusted embeds with LTI, we
-     *      send a custom_use_trusted_embed param,
-     *      added in `get_lti_params` method
-     *
-     * @param string|int $courseid
-     * @param array $lti_params
-     * @return string
-     */
-    public function get_signed_chooser_url($courseid, $lti_params) {
-        $url = $this->get_chooser_url();
-        return $url . '?' . $this->get_query(
-            $this->get_signed_lti_params($url, 'GET', $courseid, $lti_params)
-        );
-    }
-
-    /**
      * Get the moodle webroot
      *
      * @return string
@@ -337,8 +217,11 @@ class mediacore_client
      * @param object $course
      * @return array
      */
-    public function get_lti_params($course) {
-        global $USER, $CFG;
+    public function get_lti_params($courseid) {
+        global $DB, $USER, $CFG;
+
+        $course = $DB->get_record('course', array('id' => (int)$courseid), '*',
+            MUST_EXIST);
 
         $user_given = (isset($USER->firstname)) ? $USER->firstname : '';
         $user_family = (isset($USER->lastname)) ? $USER->lastname : '';
@@ -387,38 +270,6 @@ class mediacore_client
     }
 
     /**
-     * Get the signed lti parameters
-     * uses Oauth-1x
-     *
-     * @param string $endpoint
-     * @param string $method
-     * @param int $courseid
-     * @param array $params
-     * @return array
-     */
-    public function get_signed_lti_params($endpoint, $method='GET',
-        $courseid=null, $params=array()) {
-
-        global $DB;
-
-        if (empty($courseid)) {
-            throw new Zend_Exception(get_string('no_course_id',
-                LOCAL_MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
-        }
-        if (!$this->_config->has_lti_config()) {
-            throw new Zend_Exception(get_string('no_lti_config',
-                LOCAL_MEDIACORE_PLUGIN_NAME), E_USER_ERROR);
-        }
-        $course = $DB->get_record('course', array('id' => (int)$courseid), '*',
-            MUST_EXIST);
-        $key = $this->_config->get_consumer_key();
-        $secret = $this->_config->get_shared_secret();
-        $query_params = $this->get_lti_params($course);
-        return lti_sign_parameters(array_replace($query_params, $params),
-            $endpoint, $method, $key, $secret);
-    }
-
-    /**
      * Whether the config is setup for lti
      *
      * @return boolean
@@ -430,10 +281,11 @@ class mediacore_client
     /**
      * Get the custom atto/tinymce params
      *
+     * @param int|null $courseid
      * @return array
      */
-    public function get_texteditor_params() {
-        global $COURSE, $CFG;
+    public function get_texteditor_params($courseid) {
+        global $CFG;
 
         //default non-lti urls
         $chooser_js_url = $this->get_chooser_js_url();
@@ -441,10 +293,10 @@ class mediacore_client
         $launch_url = null;
 
         if ($this->has_lti_config() && isset($COURSE->id)) {
-            $chooser_js_url = $this->get_chooser_js_url($COURSE->id);
             // append the context_id to the chooser endpoint
             $chooser_url .= (strpos($chooser_url, '?') === false) ? '?' : '&';
             $chooser_url .= 'context_id=' . $COURSE->id;
+
             $site_url = $this->get_siteurl();
             $content_url = $CFG->wwwroot.'/local/mediacore/sign.php';
             $launch_url = str_replace($site_url, $content_url, $chooser_url);
@@ -468,6 +320,8 @@ class mediacore_client
      * @return array
      */
     public function configure_tinymce_lib_params($filters, $params) {
+        global $COURSE;
+
         if (!function_exists('filter_get_active_in_context')) {
             throw new Zend_Exception('This class can only be called ' .
                 'from within the tinymce/lib.php file');
@@ -476,7 +330,7 @@ class mediacore_client
             $filters = filter_get_active_in_context($context);
         }
         if (array_key_exists('filter/mediacore', $filters)) {
-            $params = $params + $this->get_texteditor_params();
+            $params = $params + $this->get_texteditor_params($COURSE->id);
             $params['plugins'] .= ',mediacore';
             if (isset($params['theme_advanced_buttons3_add'])) {
                 $params['theme_advanced_buttons3_add'] .= ",|,mediacore";

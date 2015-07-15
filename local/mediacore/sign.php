@@ -26,8 +26,7 @@ $courseid = $params['context_id'];
 $site_url = $mcore_client->get_siteurl();
 $url = str_replace($_SERVER['SCRIPT_NAME'], $site_url, $url);
 
-$params = $mcore_client->get_signed_lti_params(
-    $url, 'GET', $courseid, $params
-);
-$url .= '?' . http_build_query($params);
-redirect($url);
+$auth = $mcore_client->get_auth();
+$lti_params = $mcore_client->get_lti_params($courseid);
+$signed_url = $auth->buildRequestUrl($url, 'GET', $lti_params);
+redirect($signed_url);

@@ -103,10 +103,13 @@ class Uri
      */
     public function normalizePath($path)
     {
-        $path = '/' . rtrim($path, '/');
-        // replace any 2 or more forward slashes
-        // with a single forward slash
-        return preg_replace('/[\/]{2,}/', '/', $path);
+        if (!empty($path)) {
+            $path = '/' . rtrim($path, '/');
+            // replace any 2 or more forward slashes
+            // with a single forward slash
+            $path = preg_replace('/[\/]{2,}/', '/', $path);
+        }
+        return $path;
     }
 
     /**

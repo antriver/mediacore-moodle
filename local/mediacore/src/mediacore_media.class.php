@@ -86,7 +86,7 @@ class mediacore_media
 
         if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
             $headers = array();
-            $authtkt_str = $this->_mcore_client->get_auth_cookie($courseid);
+            $authtkt_str = $this->_mcore_client->get_authtkt($courseid);
             if (empty($authtkt_str)) {
                 // TODO: report an error?
             } else {
@@ -135,7 +135,7 @@ class mediacore_media
 
         if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
             $headers = array();
-            $authtkt_str = $this->_mcore_client->get_auth_cookie($courseid);
+            $authtkt_str = $this->_mcore_client->get_authtkt($courseid);
             if (empty($authtkt_str)) {
                 // TODO: report an error?
             } else {

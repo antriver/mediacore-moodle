@@ -118,10 +118,11 @@ class Client
         $path = '';
         $args = array_filter(func_get_args());
         if (is_array($args) && !empty($args)) {
-            $path .= '/'. implode('/', $args);
+            $path = '/'. implode('/', $args);
         }
         $uri = clone $this->_uri;
-        return $uri->setPath($path)->toString();
+        $uri->setPath($path);
+        return $uri->toString();
     }
 
     /**
