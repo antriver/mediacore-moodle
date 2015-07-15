@@ -44,7 +44,7 @@ require_once 'mediacore_media_rowset.class.php';
  */
 class mediacore_media
 {
-    private $_mcore_client;
+    private $_client;
 
     /**
      * Constructor
@@ -52,7 +52,7 @@ class mediacore_media
      * @param mediacore_client $client
      */
     public function __construct($client) {
-        $this->_mcore_client = $client;
+        $this->_client = $client;
     }
 
     /**
@@ -82,20 +82,20 @@ class mediacore_media
             $params['sort'] = 'relevance';
         }
 
-        $url = $this->_mcore_client->get_url('api2', 'media');
+        $url = $this->_client->get_url('api2', 'media');
 
-        if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
+        if ($this->_client->has_lti_config() && !is_null($courseid)) {
             $headers = array();
-            $authtkt_str = $this->_mcore_client->get_authtkt($courseid);
+            $authtkt_str = $this->_client->get_authtkt($courseid);
             if (empty($authtkt_str)) {
                 // TODO: report an error?
             } else {
                 $headers = array('Cookie: ' . $authtkt_str);
-                $url .= '?' . $this->_mcore_client->get_query($params);
-                $result = $this->_mcore_client->get($url, null, $headers);
+                $url .= '?' . $this->_client->get_query($params);
+                $result = $this->_client->get($url, null, $headers);
             }
         } else {
-            $result = $this->_mcore_client->get($url);
+            $result = $this->_client->get($url);
         }
 
         $rowset = null;
@@ -104,7 +104,7 @@ class mediacore_media
         } else {
             $result = json_decode($result);
             $rowset = new mediacore_media_rowset(
-                $this->_mcore_client, $result->items
+                $this->_client, $result->items
             );
         }
         return $rowset;
@@ -131,20 +131,20 @@ class mediacore_media
             $params['search'] = urlencode($search);
         }
 
-        $url = $this->_mcore_client->get_url('api2', 'media', 'count');
+        $url = $this->_client->get_url('api2', 'media', 'count');
 
-        if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
+        if ($this->_client->has_lti_config() && !is_null($courseid)) {
             $headers = array();
-            $authtkt_str = $this->_mcore_client->get_authtkt($courseid);
+            $authtkt_str = $this->_client->get_authtkt($courseid);
             if (empty($authtkt_str)) {
                 // TODO: report an error?
             } else {
                 $headers = array('Cookie: ' . $authtkt_str);
-                $url .= '?' . $this->_mcore_client->get_query($params);
-                $result = $this->_mcore_client->get($url, null, $headers);
+                $url .= '?' . $this->_client->get_query($params);
+                $result = $this->_client->get($url, null, $headers);
             }
         } else {
-            $result = $this->_mcore_client->get($url);
+            $result = $this->_client->get($url);
         }
 
         $count = 0;
