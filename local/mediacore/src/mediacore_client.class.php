@@ -281,11 +281,10 @@ class mediacore_client
     /**
      * Get the custom atto/tinymce params
      *
-     * @param int|null $courseid
      * @return array
      */
-    public function get_texteditor_params($courseid) {
-        global $CFG;
+    public function get_texteditor_params() {
+        global $CFG, $COURSE;
 
         //default non-lti urls
         $chooser_js_url = $this->get_chooser_js_url();
@@ -330,7 +329,7 @@ class mediacore_client
             $filters = filter_get_active_in_context($context);
         }
         if (array_key_exists('filter/mediacore', $filters)) {
-            $params = $params + $this->get_texteditor_params($COURSE->id);
+            $params = $params + $this->get_texteditor_params();
             $params['plugins'] .= ',mediacore';
             if (isset($params['theme_advanced_buttons3_add'])) {
                 $params['theme_advanced_buttons3_add'] .= ",|,mediacore";
