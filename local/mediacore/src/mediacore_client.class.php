@@ -279,7 +279,7 @@ class mediacore_client
      * @return string
      */
     public function get_lti_signed_url($courseid, $url, $method='GET') {
-        $lti_params = $mcore_client->get_lti_params($courseid);
+        $lti_params = $this->get_lti_params($courseid);
         return $this->_auth->buildRequestUrl(
             $url, 'GET', $this->get_lti_params($courseid)
         );
