@@ -21,11 +21,11 @@
  *    / /  / / /___/ /_/ /_/ // ___ / /___/ /_/ / _, _/ /___
  *   /_/  /_/_____/_____//___/_/  |_\____/\____/_/ |_/_____/
  *
- * MediaCore repository search
+ * MediaCore mod video resource
  *
- * @package    repository_mediacore
- * @category   repository
- * @copyright  2013 MediaCore Technologies
+ * @package    mod_mediacore
+ * @category   mod
+ * @copyright  2015 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
@@ -35,15 +35,93 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 global $CFG;
 require_once $CFG->dirroot . '/local/mediacore/lib.php';
 
-
+/**
+ * This function is passed the variables from the mod_form.php file
+ * (discussed later) as an object when you first create an activity and click
+ * submit. This is where you can take that data, do what you want with it and
+ * then insert it into the database if you wish. This is only called once when
+ * the module instance is first created, so this is where you should place the
+ * logic to add the activity.
+ *
+ * @return boolean
+ */
 function mediacore_add_instance($mediacore) {
+    global $DB, $CFG;
 
+    $mediacore->timemodified = time();
+    $mediacore->id =  $DB->insert_record('mediacore_resource', $mediacore);
+
+    return $mediacore->id;
 }
 
+/**
+ * This function is passed the variables from the mod_form.php file as an
+ * object whenever you update an activity and click submit. The id of the
+ * instance you are editing is passed as the attribute instance and can be used
+ * to edit any existing values in the database for that instance.
+ *
+ * @return boolean
+ */
 function mediacore_update_instance($mediacore) {
+    global $DB, $CFG;
 
+    $mediacore->id = $mediacore->instance;
+    $mediacore->timemodified = time();
+    $updated = $DB->update_record('mediacore_resource', $mediacore);
+
+    return $updated;
 }
 
-function mediacore_delete_instance($id) {
 
+/**
+ * This function is passed the id of your module which you can use to delete
+ * the records from any database tables associated with that id. For example,
+ * in the certificate module the id in the certificate table is passed, and
+ * then used to delete the certificate from the database, any issues of this
+ * certificate and any files associated with it on the filesystem.
+ *
+ * @return boolean
+ */
+function mediacore_delete_instance($id) {
+    global $DB;
+
+    if (!$mediacore = $DB->get_record('mediacore_resource', array('id' => $id))) {
+        return false;
+    }
+    $DB->delete_records('mediacore_resource', array('id' => $mediacore->id));
+
+    return true;
+}
+
+/**
+ * Function to be run periodically according to the moodle cron
+ * This function searches for things that need to be done, such
+ * as sending out mail, toggling flags etc.
+ *
+ * @return boolean
+ */
+function mediacore_cron () {
+    return false;
+}
+
+/**
+ * TODO Add doc string
+ *
+ * @return boolean
+ */
+function mediacore_supports($feature) {
+    switch($feature) {
+        case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_RESOURCE;
+        case FEATURE_GROUPS:                  return false;
+        case FEATURE_GROUPINGS:               return false;
+        case FEATURE_GROUPMEMBERSONLY:        return true;
+        case FEATURE_MOD_INTRO:               return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
+        case FEATURE_GRADE_HAS_GRADE:         return false;
+        case FEATURE_GRADE_OUTCOMES:          return false;
+        case FEATURE_BACKUP_MOODLE2:          return true;
+        case FEATURE_SHOW_DESCRIPTION:        return true;
+
+        default: return null;
+    }
 }

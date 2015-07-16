@@ -30,15 +30,8 @@
  *
  */
 
-defined('MOODLE_INTERNAL') || die('Invalid access');
-
-$module                     = new stdClass();
-$module->cron               = 0;
-$module->component          = 'mod_mediacore';
-$module->version            = 2015071500;
-$module->requires           = 2012062500;
-$module->release            = '1.0.0';
-$module->maturity           = MATURITY_ALPHA;
-$plugin->dependencies       = array(
-    'local_mediacore' => 2015070000,
-);
+$string['modulename'] = 'MediaCore Media';
+$string['modulenameplural'] = 'MediaCore Media';
+$string['modulenamehelp'] = '';
+$string['pluginadministration'] = 'MediaCore Media';
+$string['pluginname'] = 'MediaCore Media';
