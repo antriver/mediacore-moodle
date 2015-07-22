@@ -190,7 +190,7 @@ class mediacore_client
      */
     public function get_unsigned_chooser_url() {
         $url = $this->get_chooser_url();
-        if ($this->_config->get_use_trusted_embeds()) {
+        if ($this->has_trusted_embed_config()) {
             $url .= '?use_trusted_embed=true';
         }
         return $url;
@@ -269,6 +269,13 @@ class mediacore_client
      */
     public function has_lti_config() {
         return $this->_config->has_lti_config();
+    }
+
+    /**
+     *
+     */
+    public function has_trusted_embed_config() {
+        return $this->_config->get_use_trusted_embeds();
     }
 
     /**
