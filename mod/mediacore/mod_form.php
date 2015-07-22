@@ -23,7 +23,7 @@
  *
  * MediaCore mod video resource
  *
- * @package    mod_mediacore
+ * @package    mediacore
  * @category   mod
  * @copyright  2015 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -52,11 +52,10 @@ class mod_mediacore_mod_form extends moodleform_mod {
         $PAGE->add_body_class($class);
 
         // JS
-        $variables = $client->get_texteditor_params();
-        $PAGE->requires->data_for_js('mcore_vars', $variables);
-        $PAGE->requires->js(new moodle_url($variables['mcore_chooser_js_url']));
+        $params = $client->get_texteditor_params();
+        $PAGE->requires->data_for_js('mcore_params', $params);
         $module = array(
-            'name'      => 'mod_mediacore',
+            'name'      => 'mediacore',
             'fullpath'  => '/mod/mediacore/main.js',
             'requires'  => array('yui2-event'),
         );
@@ -99,20 +98,17 @@ class mod_mediacore_mod_form extends moodleform_mod {
     public function add_media_btn($mform) {
         $is_new = true; //TODO
 
-        $thumb_html = $this->_get_default_thumb($is_new);
         $iframe_html = $this->_get_preview_iframe($is_new);
-        $html = '<div class="fitem fitem_ftext">' .
-                '<div class="felement ftext">' .
-                $thumb_html . $iframe_html .
-                '</div>' .
-                '</div>';
-        $mform->addElement('html', $html);
+        $mform->addElement(
+            'static', 'mcore-media-iframe', 'Media Preview', $iframe_html
+        );
 
         $mediagroup = array();
         $attr = array('id' => 'mcore-add-media-btn');
         $add_btn_text = ($is_new) ? 'Add Media' : 'Replace Media';
         $mediagroup[] =& $mform->createElement(
-            'button', 'mcore-add-media-btn', $add_btn_text, 'mediacore', '', $attr
+            'button', 'mcore-add-media-btn', $add_btn_text,
+            'mediacore_add', '', $attr
         );
 
         $mform->addGroup($mediagroup, 'media_group', '&nbsp;', '&nbsp;', false);
@@ -120,55 +116,40 @@ class mod_mediacore_mod_form extends moodleform_mod {
 
     /**
      */
-    private function _get_default_thumb($is_new) {
-        $src = new moodle_url('/mod/mediacore/pix/generic-thumb.png');
-        $alt    = 'Add Media';
-        $title  = 'Add Media';
-        $style = ($is_new) ? 'display:block' : 'display:none';
-        $attr = array(
-            'id' => 'mcore-media-thumb',
-            'src' => $src->out(),
-            'alt' => $alt,
-            'title' => $title,
-            'width' => '400',
-            'height' => '225',
-            'style' => $style,
-        );
-        return html_writer::empty_tag('img', $attr);
-    }
-
-    /**
-     */
     private function _get_preview_iframe($is_new) {
 
-        $src = new moodle_url(''); //TODO
-        $style = (!$is_new) ? 'display:block' : 'display:none';
+        if ($is_new) {
+            $src = new moodle_url('/mod/mediacore/pix/generic-thumb.png');
+        } else {
+            $src = ''; //TODO
+        }
 
         $params = array(
             'id' => 'mcore-media-iframe',
             'src' => $src->out(false),
-            'height' => '400',
-            'width' => '225',
+            'width' => '560',
+            'height' => '315',
             'allowfullscreen' => 'true',
             'webkitallowfullscreen' => 'true',
             'mozallowfullscreen' => 'true',
-            'style' => $style,
+            'scrolling' => 'no',
+            'frameborder' => '0',
+            'style' => 'display:block',
         );
 
         return html_writer::tag('iframe', '', $params);
     }
 
     /**
-     * TODO
      */
     public function add_hidden_fields($mform) {
         $attr = array('id' => 'mcore-media-id');
         $mform->addElement('hidden', 'media_id', '', $attr);
         $mform->setType('media_id', PARAM_TEXT);
 
-        $attr = array('id' => 'mcore-public-url');
-        $mform->addElement('hidden', 'public_url', '', $attr);
-        $mform->setType('public_url', PARAM_URL);
+        $attr = array('id' => 'mcore-embed-url');
+        $mform->addElement('hidden', 'embed_url', '', $attr);
+        $mform->setType('embed_url', PARAM_URL);
 
         $attr = array('id' => 'mcore-thumb-url');
         $mform->addElement('hidden', 'thumb_url', '', $attr);
@@ -189,11 +170,9 @@ class mod_mediacore_mod_form extends moodleform_mod {
      */
     public function validation($data, $files) {
         $errors = array();
-
-        //if (empty($data['src'])) {
-            //$errors['add_video_thumb'] = 'No media thumb';
-        //}
-
+        if (empty($data['media_id'])) {
+            $errors['name'] = 'No media was attached.';
+        }
         return $errors;
     }
 }

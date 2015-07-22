@@ -37,7 +37,6 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 global $CFG;
 require_once $CFG->dirroot . '/local/mediacore/lib.php';
 
-
 $id = required_param('id', PARAM_INT); // Course ID
 
 // Ensure that the course specified is valid

@@ -1,47 +1,54 @@
-M.mod_mediacore = {};
+M.mod_mediacore = M.mod_mediacore || {};
 
-M.mod_mediacore.chooser = undefined;
+var NS = M.mod_mediacore;
+NS.chooser = undefined;
+NS.params = mcore_params;
 
-M.mod_mediacore.init = function(Y) {
+
+NS.init = function(Y) {
+    // Load the media chooser.js lib only if its not
+    // already defined
+    if (!'mediacore' in window) {
+        this.loadScript(
+            this.params['mcore_chooser_js_url']
+        );
+    }
+
+    // Event listeners
     var addMediaBtnElem = document.getElementById('id_mcore-add-media-btn');
     if (addMediaBtnElem) {
-        Y.YUI2.util.Event.addListener(
-            addMediaBtnElem, 'click', M.mod_mediacore.handleClick);
+        Y.YUI2.util.Event.addListener(addMediaBtnElem, 'click',
+                this.launchChooser, this);
     }
 };
 
-M.mod_mediacore.handleClick = function(e) {
-    M.mod_mediacore.launchChooser();
-};
 
-M.mod_mediacore.launchChooser = function() {
-    if (!M.mod_mediacore.chooser) {
+NS.launchChooser = function(e, self) {
+    if (!self.chooser) {
         var params = {
-            'url': mcore_vars['mcore_chooser_url'],
-            'launchUrl': mcore_vars['mcore_launch_url'],
+            'url': self.params['mcore_chooser_url'],
+            'launchUrl': self.params['mcore_launch_url'],
             'mode': 'popup'
         };
-        M.mod_mediacore.chooser = mediacore.chooser.init(params);
+        self.chooser = mediacore.chooser.init(params);
 
-        // Handle media add
         // TODO cleanup unused db fields
-        M.mod_mediacore.chooser.on('media', function(media) {
+        self.chooser.on('media', function(media) {
             var mediaIdField = document.getElementById('mcore-media-id');
-            var linkUrlField = document.getElementById('mcore-link-url');
-            var embedUrlField = document.getElementById('mcore-embed-url');
-            var metadataField = document.getElementById('mcore-metadata');
-
             mediaIdField.value = media.id;
-            linkUrlField.value = media.embed_url.replace('embed_player', 'embed_link');
+
+            var embedUrlField = document.getElementById('mcore-embed-url');
             embedUrlField.value = media.embed_url;
+
+            var thumbUrlField = document.getElementById('mcore-thumb-url');
+            thumbUrlField.value = media.thumb_url;
+
+            var metadataField = document.getElementById('mcore-metadata');
             var metadataJson = JSON.stringify(media);
             metadataField.value = metadataJson;
 
-            var thumbPreview = document.getElementById('mcore-media-thumb');
             var iframeElem = document.getElementById('mcore-media-iframe');
-            iframe.sec = media.embed_url;
-            iframe.style.display = 'block';
-            thumbPreview.style.display = 'none';
+            iframeElem.src = media.embed_url;
 
             var addMediaBtnElem = document.getElementById('id_mcore-add-media-btn');
             addMediaBtnElem.value = 'Replace Media'; //TODO i18n
@@ -50,10 +57,16 @@ M.mod_mediacore.launchChooser = function() {
         });
 
         // Handle media error
-        M.mod_mediacore.chooser.on('error', function(media) {
+        self.chooser.on('error', function(media) {
             this.close();
             throw err;
         });
     }
-    M.mod_mediacore.chooser.open();
+    self.chooser.open();
+};
+
+NS.loadScript = function(url) {
+    var script = document.createElement('script');
+    script.src = url;
+    (document.body || document.head || document.documentElement).appendChild(script);
 };

@@ -23,7 +23,7 @@
  *
  * MediaCore mod video resource
  *
- * @package    mod_mediacore
+ * @package    mediacore
  * @category   mod
  * @copyright  2015 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -49,7 +49,7 @@ function mediacore_add_instance($mediacore) {
     global $DB, $CFG;
 
     $mediacore->timemodified = time();
-    $mediacore->id =  $DB->insert_record('mediacore_resource', $mediacore);
+    $mediacore->id =  $DB->insert_record('mediacore', $mediacore);
 
     return $mediacore->id;
 }
@@ -67,7 +67,7 @@ function mediacore_update_instance($mediacore) {
 
     $mediacore->id = $mediacore->instance;
     $mediacore->timemodified = time();
-    $updated = $DB->update_record('mediacore_resource', $mediacore);
+    $updated = $DB->update_record('mediacore', $mediacore);
 
     return $updated;
 }
@@ -85,10 +85,10 @@ function mediacore_update_instance($mediacore) {
 function mediacore_delete_instance($id) {
     global $DB;
 
-    if (!$mediacore = $DB->get_record('mediacore_resource', array('id' => $id))) {
+    if (!$mediacore = $DB->get_record('mediacore', array('id' => $id))) {
         return false;
     }
-    $DB->delete_records('mediacore_resource', array('id' => $mediacore->id));
+    $DB->delete_records('mediacore', array('id' => $mediacore->id));
 
     return true;
 }

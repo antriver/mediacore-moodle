@@ -23,14 +23,14 @@
  *
  * MediaCore mod video resource
  *
- * @package    mod_mediacore
+ * @package    mediacore
  * @category   mod
  * @copyright  2015 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+require_once realpath(dirname(__FILE__) .'/../../../moodle') . '/config.php';
 
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
@@ -39,24 +39,25 @@ require_once 'lib.php';
 
 $id = required_param('id', PARAM_INT);    // Course Module ID
 
-
 // Retrieve module instance.
 if (empty($id)) {
-    print_error('invalidid', 'mediacore_resource');
+    print_error('invalidid', 'mediacore');
     return;
 }
 
-if (!$cm = get_coursemodule_from_id('mediacore_resource', $id)) {
-    // NOTE this is invalid use of print_error, must be a lang string id
+if (!$cm = get_coursemodule_from_id('mediacore', $id)) {
+    //TODO i18n
     print_error('Course Module ID was incorrect');
 }
 
 if (!$course = $DB->get_record('course', array('id'=> $cm->course))) {
-    print_error('course is misconfigured');  // NOTE As above
+    //TODO i18n
+    print_error('course is misconfigured');
 }
 
-if (!$mediacore = $DB->get_record('mediacore_resource', array('id'=> $cm->instance))) {
-    print_error('course module is incorrect'); // NOTE As above
+if (!$mediacore = $DB->get_record('mediacore', array('id'=> $cm->instance))) {
+    //TODO i18n
+    print_error('course module is incorrect');
 }
 
 require_course_login($course->id, true, $cm);
@@ -71,33 +72,28 @@ $PAGE->add_body_class($pageclass);
 
 $context = $PAGE->context;
 
-add_to_log($course->id, 'mediacore_resource', 'view video resource',
+add_to_log($course->id, 'mediacore', 'view video resource',
     'view.php?id='.$cm->id, $mediacore->id, $cm->id
 );
 
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
+$renderer = $PAGE->get_renderer('mod_mediacore');
+
 echo $OUTPUT->header();
 
-$description = format_module_intro('mediacore_resource', $mediacore, $cm->id);
+// TODO Title
+
+// IFrame
+echo $renderer->display_iframe($mediacore, $course->id);
+
+// Description
+$description = format_module_intro('mediacore', $mediacore, $cm->id);
 if (!empty($description)) {
     echo $OUTPUT->box_start('generalbox');
     echo $description;
     echo $OUTPUT->box_end();
 }
 
-$renderer = $PAGE->get_renderer('mod_mediacore');
-
-// Require a YUI module to make the object tag be as large as possible.
-//$params = array(
-    //'bodyclass' => $pageclass,
-    //'lastheight' => null,
-    //'padding' => 15
-//);
-//$PAGE->requires->yui_module('moodle-local_kaltura-lticontainer', 'M.local_kaltura.init', array($params), null, true);
-
-echo $renderer->display_iframe($mediacore, $course->id);
-
-die('view.php');
 echo $OUTPUT->footer();
