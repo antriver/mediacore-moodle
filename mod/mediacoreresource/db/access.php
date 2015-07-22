@@ -2,7 +2,7 @@
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
 $capabilities = array(
-    'mod/mediacore:view' => array(
+    'mod/mediacoreresource:view' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -10,7 +10,7 @@ $capabilities = array(
             'user' => CAP_ALLOW,
         )
     ),
-    'mod/mediacore:addinstance' => array(
+    'mod/mediacoreresource:addinstance' => array(
         'riskbitmask' => RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,

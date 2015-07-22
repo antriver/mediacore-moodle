@@ -1,11 +1,11 @@
-M.mod_mediacore = M.mod_mediacore || {};
+M.mod_mediacoreresource = M.mod_mediacoreresource || {};
 
-var NS = M.mod_mediacore;
-NS.chooser = undefined;
-NS.params = mcore_params;
+var MCoreResource = M.mod_mediacoreresource;
+MCoreResource.chooser = undefined;
+MCoreResource.params = mcore_params;
 
 
-NS.init = function(Y) {
+MCoreResource.init = function(Y) {
     // Load the media chooser.js lib only if its not
     // already defined
     if (!'mediacore' in window) {
@@ -23,7 +23,7 @@ NS.init = function(Y) {
 };
 
 
-NS.launchChooser = function(e, self) {
+MCoreResource.launchChooser = function(e, self) {
     if (!self.chooser) {
         var params = {
             'url': self.params['mcore_chooser_url'],
@@ -65,7 +65,8 @@ NS.launchChooser = function(e, self) {
     self.chooser.open();
 };
 
-NS.loadScript = function(url) {
+
+MCoreResource.loadScript = function(url) {
     var script = document.createElement('script');
     script.src = url;
     (document.body || document.head || document.documentElement).appendChild(script);

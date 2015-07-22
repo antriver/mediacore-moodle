@@ -23,7 +23,7 @@
  *
  * MediaCore mod video resource
  *
- * @package    mediacore
+ * @package    mediacoreresource
  * @category   mod
  * @copyright  2015 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,7 +31,6 @@
  */
 
 require_once realpath(dirname(__FILE__) .'/../../../moodle') . '/config.php';
-
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
 global $CFG;
@@ -41,11 +40,11 @@ $id = required_param('id', PARAM_INT);    // Course Module ID
 
 // Retrieve module instance.
 if (empty($id)) {
-    print_error('invalidid', 'mediacore');
+    print_error('invalidid', 'mediacoreresource');
     return;
 }
 
-if (!$cm = get_coursemodule_from_id('mediacore', $id)) {
+if (!$cm = get_coursemodule_from_id('mediacoreresource', $id)) {
     //TODO i18n
     print_error('Course Module ID was incorrect');
 }
@@ -55,7 +54,7 @@ if (!$course = $DB->get_record('course', array('id'=> $cm->course))) {
     print_error('course is misconfigured');
 }
 
-if (!$mediacore = $DB->get_record('mediacore', array('id'=> $cm->instance))) {
+if (!$mediacore = $DB->get_record('mediacoreresource', array('id'=> $cm->instance))) {
     //TODO i18n
     print_error('course module is incorrect');
 }
@@ -64,22 +63,22 @@ require_course_login($course->id, true, $cm);
 
 global $SESSION, $CFG;
 
-$PAGE->set_url('/mod/mediacore/view.php', array('id' => $id));
+$PAGE->set_url('/mod/mediacoreresource/view.php', array('id' => $id));
 $PAGE->set_title(format_string($mediacore->name));
 $PAGE->set_heading($course->fullname);
-$pageclass = 'mediacore-video-resource-body';
+$pageclass = 'mediacore-resource-body';
 $PAGE->add_body_class($pageclass);
 
 $context = $PAGE->context;
 
-add_to_log($course->id, 'mediacore', 'view video resource',
+add_to_log($course->id, 'mediacoreresource', 'view video resource',
     'view.php?id='.$cm->id, $mediacore->id, $cm->id
 );
 
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
-$renderer = $PAGE->get_renderer('mod_mediacore');
+$renderer = $PAGE->get_renderer('mod_mediacoreresource');
 
 echo $OUTPUT->header();
 
@@ -89,7 +88,7 @@ echo $OUTPUT->header();
 echo $renderer->display_iframe($mediacore, $course->id);
 
 // Description
-$description = format_module_intro('mediacore', $mediacore, $cm->id);
+$description = format_module_intro('mediacoreresource', $mediacore, $cm->id);
 if (!empty($description)) {
     echo $OUTPUT->box_start('generalbox');
     echo $description;

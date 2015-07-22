@@ -23,7 +23,7 @@
  *
  * MediaCore mod video resource
  *
- * @package    mediacore
+ * @package    mediacoreresource
  * @category   mod
  * @copyright  2015 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -37,7 +37,7 @@ require_once $CFG->dirroot .'/course/moodleform_mod.php';
 require_once $CFG->dirroot . '/local/mediacore/lib.php';
 
 
-class mod_mediacore_mod_form extends moodleform_mod {
+class mod_mediacoreresource_mod_form extends moodleform_mod {
 
     /**
      */
@@ -47,7 +47,7 @@ class mod_mediacore_mod_form extends moodleform_mod {
         $client = new mediacore_client();
 
         // CSS
-        $PAGE->requires->css('/mod/mediacore/styles.css');
+        $PAGE->requires->css('/mod/mediacoreresource/styles.css');
         $class = 'mediacore-resource';
         $PAGE->add_body_class($class);
 
@@ -55,12 +55,12 @@ class mod_mediacore_mod_form extends moodleform_mod {
         $params = $client->get_texteditor_params();
         $PAGE->requires->data_for_js('mcore_params', $params);
         $module = array(
-            'name'      => 'mediacore',
-            'fullpath'  => '/mod/mediacore/main.js',
+            'name'      => 'mediacoreresource',
+            'fullpath'  => '/mod/mediacoreresource/main.js',
             'requires'  => array('yui2-event'),
         );
         $PAGE->requires->js_init_call(
-            'M.mod_mediacore.init',
+            'M.mod_mediacoreresource.init',
             /* args */ null,
             /* domready */ true,
             /* js specs */ $module
@@ -108,7 +108,7 @@ class mod_mediacore_mod_form extends moodleform_mod {
         $add_btn_text = ($is_new) ? 'Add Media' : 'Replace Media';
         $mediagroup[] =& $mform->createElement(
             'button', 'mcore-add-media-btn', $add_btn_text,
-            'mediacore_add', '', $attr
+            'mediacoreresource_add', '', $attr
         );
 
         $mform->addGroup($mediagroup, 'media_group', '&nbsp;', '&nbsp;', false);
@@ -119,7 +119,7 @@ class mod_mediacore_mod_form extends moodleform_mod {
     private function _get_preview_iframe($is_new) {
 
         if ($is_new) {
-            $src = new moodle_url('/mod/mediacore/pix/generic-thumb.png');
+            $src = new moodle_url('/mod/mediacoreresource/pix/generic-thumb.png');
         } else {
             $src = ''; //TODO
         }

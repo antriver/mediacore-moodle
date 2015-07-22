@@ -23,15 +23,23 @@
  *
  * MediaCore mod video resource
  *
- * @package    mod_mediacore
+ * @package    mediacoreresource
  * @category   mod
  * @copyright  2015 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
-$string['modulename'] = 'MediaCore Media';
-$string['modulenameplural'] = 'MediaCore Media';
-$string['modulenamehelp'] = '';
-$string['pluginadministration'] = 'MediaCore Media';
-$string['pluginname'] = 'MediaCore Media';
+require_once('../../config.php');
+
+defined('MOODLE_INTERNAL') || die('Invalid access');
+
+global $CFG;
+require_once $CFG->dirroot . '/local/mediacore/lib.php';
+
+$id = required_param('id', PARAM_INT); // Course ID
+
+// Ensure that the course specified is valid
+if (!$course = $DB->get_record('course', array('id'=> $id))) {
+    print_error('Course ID is incorrect');
+}

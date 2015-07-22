@@ -23,7 +23,7 @@
  *
  * MediaCore mod video resource
  *
- * @package    mediacore
+ * @package    mediacoreresource
  * @category   mod
  * @copyright  2015 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 require_once realpath(dirname(__FILE__) . '/../../local/mediacore') . '/lib.php';
 
-class mod_mediacore_renderer extends plugin_renderer_base {
+class mod_mediacoreresource_renderer extends plugin_renderer_base {
     /**
      * This function displays the title of the video in bold.
      * @param string $title The title of the video.
@@ -58,11 +58,13 @@ class mod_mediacore_renderer extends plugin_renderer_base {
      */
     public function display_iframe($mediacore, $courseid) {
 
+        global $CFG;
+
         $client = new mediacore_client();
 
         $url = new moodle_url($mediacore->embed_url);
-        if ($client->has_lti_config() && !$client->has_trusted_embed_config()) {
-            $url = new moodle_url('/lti/mediacore/sign.php');
+        if ($client->has_lti_config()) {
+            $url = new moodle_url($CFG->wwwroot . '/local/mediacore/sign.php');
         }
 
         $attr = array(
@@ -73,8 +75,7 @@ class mod_mediacore_renderer extends plugin_renderer_base {
             'webkitallowfullscreen' => 'true',
             'mozallowfullscreen' => 'true',
             'frameborder' => '0',
-            'scrolling' => 'no',
-            'onload' => '
+            'scrolling' => 'no'
         );
 
         $output = html_writer::tag('iframe', '', $attr);

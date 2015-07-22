@@ -23,7 +23,7 @@
  *
  * MediaCore mod video resource
  *
- * @package    mod_mediacore
+ * @package    mediacoreresource
  * @category   mod
  * @copyright  2015 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -34,8 +34,8 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 $module                     = new stdClass();
 $module->cron               = 0;
-$module->component          = 'mod_mediacore';
-$module->version            = 2015071500;
+$module->component          = 'mod_mediacoreresource';
+$module->version            = 2015071900;
 $module->requires           = 2012062500;
 $module->release            = '1.0.0';
 $module->maturity           = MATURITY_ALPHA;
