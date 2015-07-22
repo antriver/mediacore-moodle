@@ -29,9 +29,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
-
 $string['modulename'] = 'MediaCore Media Resource';
 $string['modulenameplural'] = 'MediaCore Media Resource';
 $string['modulenamehelp'] = '';
 $string['pluginadministration'] = 'MediaCore Media Resource';
 $string['pluginname'] = 'MediaCore Media Resource';
+$string['headertitle'] = 'General';
+$string['name'] = 'Name';
+$string['mediapreview'] = 'Media Preview';
+$string['addmedia'] = 'Add Media';
+$string['replacemedia'] = 'Replace Media';
+$string['noattachedmedia'] = 'No media item was added!';
+$string['invalidcourseid'] = 'Invalid course id';
+$string['invalidid'] = 'Invalid id';
+$string['invalidcoursemoduleid'] = 'Invalid course module id';
+$string['invalidcourse'] = 'Invalid course';
+$string['invalidcoursemodule'] = 'Invalid course module';

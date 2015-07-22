@@ -71,7 +71,8 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
 
         // Form
         $mform =& $this->_form;
-        $mform->addElement('header', 'mcore-general', 'General');
+        $mform->addElement('header', 'mcore-general',
+            get_string('headertitle', 'mediacoreresource'));
         $this->add_form_fields($mform, $is_new);
         $this->add_media_btn($mform, $is_new);
         $this->add_hidden_fields($mform, $is_new);
@@ -84,7 +85,8 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
     public function add_form_fields($mform, $is_new) {
         //
         // Name
-        $mform->addElement('text', 'name', 'Name:');
+        $mform->addElement('text', 'name',
+            get_string('name', 'mediacoreresource'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -102,12 +104,16 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
 
         $iframe_html = $this->_get_preview_iframe($is_new);
         $mform->addElement(
-            'static', 'mcore-media-iframe', 'Media Preview', $iframe_html
+            'static', 'mcore-media-iframe',
+            get_string('mediapreview', 'mediacoreresource'),
+            $iframe_html
         );
 
         $btngroup = array();
         $attr = array('id' => 'mcore-add-media-btn');
-        $add_btn_text = ($is_new) ? 'Add Media' : 'Replace Media';
+        $add_btn_text = ($is_new)
+            ? get_string('addmedia', 'mediacoreresource')
+            : get_string('replacemedia', 'mediacoreresource');
         $btngroup[] =& $mform->createElement(
             'button', 'mcore-add-media-btn', $add_btn_text,
             'mediacoreresource_add', '', $attr
@@ -172,7 +178,8 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
     public function validation($data, $files) {
         $errors = array();
         if (empty($data['media_id'])) {
-            $errors['name'] = 'No media was attached.';
+            $errors['name'] =
+                get_string('noattachedmedia', 'mediacoreresource');
         }
         return $errors;
     }

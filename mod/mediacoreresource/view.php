@@ -38,23 +38,20 @@ require_once 'lib.php';
 
 $courseid = required_param('id', PARAM_INT);
 if (empty($courseid)) {
-    print_error('invalidid', 'mediacoreresource');
+    print_error('invalidcourseid', 'mediacoreresource');
     return;
 }
 if (!$coursemod = get_coursemodule_from_id('mediacoreresource', $courseid)) {
-    //TODO i18n
-    print_error('Course Module ID was incorrect');
+    print_error('invalidcoursemoduleid', 'mediacoreresource');
     return;
 }
 if (!$course = $DB->get_record('course', array('id'=> $coursemod->course))) {
-    //TODO i18n
-    print_error('course is misconfigured');
+    print_error('invalidcourse', 'mediacoreresource');
     return;
 }
 
 if (!$mediacoreresource = $DB->get_record('mediacoreresource', array('id'=> $coursemod->instance))) {
-    //TODO i18n
-    print_error('course module is incorrect');
+    print_error('invalidcoursemodule', 'mediacoreresource');
     return;
 }
 
