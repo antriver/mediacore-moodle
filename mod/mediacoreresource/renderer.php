@@ -35,51 +35,48 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 require_once realpath(dirname(__FILE__) . '/../../local/mediacore') . '/lib.php';
 
 class mod_mediacoreresource_renderer extends plugin_renderer_base {
+
     /**
-     * This function displays the title of the video in bold.
-     * @param string $title The title of the video.
-     * @return string HTML markup.
      */
-    public function display_mod_info($title) {
-        $output = '';
-
-        $attr = array('for' => 'mcore-media-iframe');
-        $output .= html_writer::tag('b', $title);
-        $output .= html_writer::empty_tag('br');
-
-        return $output;
+    public function display_name($title) {
+        $html = html_writer::tag('b', $title);
+        $attrs = array('class' => 'mcore-media-name');
+        return html_writer::tag('div', $html, $attrs);
     }
 
     /**
-     * This function displays the iframe markup.
-     * @param object $mediacore A Kaltura video resrouce instance object.
-     * @param int $courseid A course id.
-     * @return string HTML markup.
      */
-    public function display_iframe($mediacore, $courseid) {
+    public function display_responsive_iframe($mediacoreresource, $courseid) {
+        $attrs = array('class' => 'mcore-media-iframe-responsive');
+        $html = $this->display_iframe($mediacoreresource, $courseid);
+        return html_writer::tag('div', $html, $attrs);
+    }
 
+    /**
+     */
+    public function display_iframe($mediacoreresource, $courseid) {
         global $CFG;
-
         $client = new mediacore_client();
 
-        $url = new moodle_url($mediacore->embed_url);
-        if ($client->has_lti_config()) {
-            $url = new moodle_url($CFG->wwwroot . '/local/mediacore/sign.php');
+        $embed_url = $mediacoreresource->embed_url;
+        if ($client->has_lti_config() && !is_null($courseid)) {
+            $site_url = $client->get_siteurl();
+            $content_url = $CFG->wwwroot . '/local/mediacore/sign.php';
+            $embed_url = str_replace($site_url, $content_url, $embed_url);
         }
+        $embed_url = new moodle_url($embed_url);
 
-        $attr = array(
+        $iframe_attrs = array(
             'id' => 'mcore-media-iframe',
-            'width' => '100%',
-            'src' => $url->out(false),
+            'src' => $embed_url->out(false),
+            'width' => '560',
+            'height' => '315',
             'allowfullscreen' => 'true',
             'webkitallowfullscreen' => 'true',
             'mozallowfullscreen' => 'true',
+            'scrolling' => 'no',
             'frameborder' => '0',
-            'scrolling' => 'no'
         );
-
-        $output = html_writer::tag('iframe', '', $attr);
-        $output = html_writer::tag('center', $output);
-        return $output;
+        return html_writer::tag('iframe', '', $iframe_attrs);
     }
 }
