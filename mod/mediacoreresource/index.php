@@ -39,5 +39,5 @@ require_once $CFG->dirroot . '/local/mediacore/lib.php';
 
 $id = required_param('id', PARAM_INT); // Course ID
 if (!$course = $DB->get_record('course', array('id'=> $id))) {
-    print_error('incorrectcourseid');
+    print_error('invalidcourseid');
 }
