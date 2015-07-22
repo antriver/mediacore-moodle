@@ -48,7 +48,7 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
 
         // CSS
         $PAGE->requires->css('/mod/mediacoreresource/styles.css');
-        $class = 'mediacore-resource';
+        $class = 'mediacore-resource-add-update';
         $PAGE->add_body_class($class);
 
         // JS
@@ -66,19 +66,22 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
             /* js specs */ $module
         );
 
+        // Check if new or update
+        $is_new = !isset($this->current->update);
+
         // Form
         $mform =& $this->_form;
         $mform->addElement('header', 'mcore-general', 'General');
-        $this->add_form_fields($mform);
-        $this->add_media_btn($mform);
-        $this->add_hidden_fields($mform);
+        $this->add_form_fields($mform, $is_new);
+        $this->add_media_btn($mform, $is_new);
+        $this->add_hidden_fields($mform, $is_new);
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }
 
     /**
      */
-    public function add_form_fields($mform) {
+    public function add_form_fields($mform, $is_new) {
         //
         // Name
         $mform->addElement('text', 'name', 'Name:');
@@ -95,23 +98,22 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
 
     /**
      */
-    public function add_media_btn($mform) {
-        $is_new = true; //TODO
+    public function add_media_btn($mform, $is_new) {
 
         $iframe_html = $this->_get_preview_iframe($is_new);
         $mform->addElement(
             'static', 'mcore-media-iframe', 'Media Preview', $iframe_html
         );
 
-        $mediagroup = array();
+        $btngroup = array();
         $attr = array('id' => 'mcore-add-media-btn');
         $add_btn_text = ($is_new) ? 'Add Media' : 'Replace Media';
-        $mediagroup[] =& $mform->createElement(
+        $btngroup[] =& $mform->createElement(
             'button', 'mcore-add-media-btn', $add_btn_text,
             'mediacoreresource_add', '', $attr
         );
 
-        $mform->addGroup($mediagroup, 'media_group', '&nbsp;', '&nbsp;', false);
+        $mform->addGroup($btngroup, 'media_group', '&nbsp;', '&nbsp;', false);
     }
 
     /**
@@ -119,14 +121,15 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
     private function _get_preview_iframe($is_new) {
 
         if ($is_new) {
-            $src = new moodle_url('/mod/mediacoreresource/pix/generic-thumb.png');
+            $url = '/mod/mediacoreresource/pix/generic-thumb.png';
         } else {
-            $src = ''; //TODO
+            $url = $this->current->embed_url;
         }
+        $url = new moodle_url($url);
 
-        $params = array(
+        $iframe_attrs = array(
             'id' => 'mcore-media-iframe',
-            'src' => $src->out(false),
+            'src' => $url->out(false),
             'width' => '560',
             'height' => '315',
             'allowfullscreen' => 'true',
@@ -134,10 +137,9 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
             'mozallowfullscreen' => 'true',
             'scrolling' => 'no',
             'frameborder' => '0',
-            'style' => 'display:block',
         );
 
-        return html_writer::tag('iframe', '', $params);
+        return html_writer::tag('iframe', '', $iframe_attrs);
     }
 
     /**
@@ -161,12 +163,11 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
     }
 
     /**
-     * Validates the form
-     * TODO
+     * Validate the form
      *
-     * @param array $data Array of form values
-     * @param array $files Array of files
-     * @return array $errors Array of error messages
+     * @param array $data
+     * @param array $files
+     * @return array $errors
      */
     public function validation($data, $files) {
         $errors = array();
