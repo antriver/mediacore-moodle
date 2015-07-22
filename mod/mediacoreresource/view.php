@@ -30,7 +30,7 @@
  *
  */
 
-require_once realpath(dirname(__FILE__) .'/../../../moodle') . '/config.php';
+require_once('../../config.php');
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
 global $CFG;
