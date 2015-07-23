@@ -29,11 +29,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
-$string['modulename'] = 'MediaCore Media Resource';
-$string['modulenameplural'] = 'MediaCore Media Resource';
+$string['modulename'] = 'MediaCore Media';
+$string['modulenameplural'] = 'MediaCore Media';
 $string['modulenamehelp'] = '';
-$string['pluginadministration'] = 'MediaCore Media Resource';
-$string['pluginname'] = 'MediaCore Media Resource';
+$string['pluginadministration'] = 'MediaCore Media';
+$string['pluginname'] = 'MediaCore Media';
 $string['headertitle'] = 'General';
 $string['name'] = 'Name';
 $string['mediapreview'] = 'Media Preview';
