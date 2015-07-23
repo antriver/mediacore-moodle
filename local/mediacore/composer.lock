@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "mediacore/mediacore-client-php",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mediacore/mediacore-client-php.git",
-                "reference": "072ac8864d3e26bcce37715f48492991cb2cbf7d"
+                "reference": "43eb5f3bd08e96d724a3d0173fd89abfa9435b1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mediacore/mediacore-client-php/zipball/072ac8864d3e26bcce37715f48492991cb2cbf7d",
-                "reference": "072ac8864d3e26bcce37715f48492991cb2cbf7d",
+                "url": "https://api.github.com/repos/mediacore/mediacore-client-php/zipball/43eb5f3bd08e96d724a3d0173fd89abfa9435b1f",
+                "reference": "43eb5f3bd08e96d724a3d0173fd89abfa9435b1f",
                 "shasum": ""
             },
             "require": {
@@ -53,7 +53,7 @@
                 "mediacore",
                 "php"
             ],
-            "time": "2015-07-15 02:47:18"
+            "time": "2015-07-23 20:57:49"
         },
         {
             "name": "rmccue/requests",

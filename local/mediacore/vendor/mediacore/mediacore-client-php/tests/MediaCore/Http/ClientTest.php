@@ -60,4 +60,42 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('id', $response->json);
         $this->assertEquals('2751068', $response->json->id);
     }
+
+    /**
+     */
+    public function testLtiAuthRequest()
+    {
+        $url = 'http://127.0.0.1:8080';
+        $key = 'key';
+        $secret = 'secret';
+        $ltiParams = array(
+            'context_id' => '0001',
+            'context_label' => 'Context Label',
+            'context_title' => 'Context Title',
+            'ext_lms' => 'moodle-2',
+            'lis_person_name_family' => 'Family',
+            'lis_person_name_full' => 'Given Family',
+            'lis_person_name_given' => 'Given',
+            'lis_person_contact_email_primary' => 'test@email.com',
+            'lti_message_type' => 'basic-lti-launch-request',
+            'roles' => 'Instructor',
+            'tool_consumer_info_product_family_code' => 'moodle',
+            'tool_consumer_info_version' => '1.0',
+            'user_id' => 101,
+        );
+
+        $auth = new Lti($key, $secret);
+        $client = new Client($url, $auth);
+        $postUrl = $client->getUrl('api2', 'lti', 'authtkt');
+
+        $count = 20;
+        $successes = array();
+        for ($i=0; $i<$count; $i++) {
+            $response = $client->post($postUrl, $ltiParams);
+            if ($response->statusCode == 200) {
+                array_push($successes, 1);
+            }
+        }
+        $this->assertCount($count, $successes);
+    }
 }

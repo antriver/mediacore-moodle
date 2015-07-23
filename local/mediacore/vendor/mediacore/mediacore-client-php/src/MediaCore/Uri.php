@@ -265,8 +265,8 @@ class Uri
             $key = $kv[0];
             $val = $kv[1];
             if (!$encoded) {
-                $key = urldecode($key);
-                $val = urldecode($val);
+                $key = rawurldecode($key);
+                $val = rawurldecode($val);
             }
             if (array_key_exists($key, $result)) {
                 if (is_array($result[$key])) {
@@ -313,10 +313,10 @@ class Uri
         $queryStr = '';
         foreach ($args as $arg) {
             foreach ($arg as $key=>$value) {
-                $key = urlencode($key);
+                $key = rawurlencode($key);
                 if (is_array($value)) {
                     foreach ($value as $v) {
-                        $val = urlencode($v);
+                        $val = rawurlencode($v);
                         $queryStr .= $key . '=' . $val . '&';
                     }
                 } else {
