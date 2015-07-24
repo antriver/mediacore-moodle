@@ -83,7 +83,7 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
     /**
      */
     public function add_form_fields($mform, $is_new) {
-        //
+
         // Name
         $mform->addElement('text', 'name',
             get_string('name', 'mediacoreresource'));
@@ -115,8 +115,7 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
             ? get_string('addmedia', 'mediacoreresource')
             : get_string('replacemedia', 'mediacoreresource');
         $btngroup[] =& $mform->createElement(
-            'button', 'mcore-add-media-btn', $add_btn_text,
-            'mediacoreresource_add', '', $attr
+            'button', 'add_media_btn', $add_btn_text, '', '', $attr
         );
 
         $mform->addGroup($btngroup, 'media_group', '&nbsp;', '&nbsp;', false);
@@ -177,6 +176,7 @@ class mod_mediacoreresource_mod_form extends moodleform_mod {
      */
     public function validation($data, $files) {
         $errors = array();
+        //var_dump($data); die;
         if (empty($data['media_id'])) {
             $errors['name'] =
                 get_string('noattachedmedia', 'mediacoreresource');

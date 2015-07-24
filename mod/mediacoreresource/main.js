@@ -15,7 +15,7 @@ MCoreResource.init = function(Y) {
     }
 
     // Event listeners
-    var addMediaBtnElem = document.getElementById('id_mcore-add-media-btn');
+    var addMediaBtnElem = document.getElementById('id_add_media_btn');
     if (addMediaBtnElem) {
         Y.YUI2.util.Event.addListener(addMediaBtnElem, 'click',
                 this.launchChooser, this);
@@ -32,7 +32,6 @@ MCoreResource.launchChooser = function(e, self) {
         };
         self.chooser = mediacore.chooser.init(params);
 
-        // TODO cleanup unused db fields
         self.chooser.on('media', function(media) {
             var mediaIdField = document.getElementById('mcore-media-id');
             mediaIdField.value = media.id;
@@ -50,8 +49,8 @@ MCoreResource.launchChooser = function(e, self) {
             var iframeElem = document.getElementById('mcore-media-iframe');
             iframeElem.src = media.embed_url;
 
-            var addMediaBtnElem = document.getElementById('id_mcore-add-media-btn');
-            addMediaBtnElem.value = 'Replace Media'; //TODO i18n
+            var addMediaBtnElem = document.getElementById('id_add_media_btn');
+            addMediaBtnElem.value = 'Replace Media';
 
             this.close();
         });
