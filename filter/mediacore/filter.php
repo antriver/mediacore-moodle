@@ -92,7 +92,13 @@ class filter_mediacore extends moodle_text_filter {
             return $html;
         }
         $dom = new DomDocument();
-        @$dom->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+        $sanitized_html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            @$dom->loadHtml($sanitized_html);
+        } else {
+            @$dom->loadHtml($sanitized_html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        }
         $xpath = new DOMXPath($dom);
         foreach ($xpath->query('//a') as $node) {
             $href = $node->getAttribute('href');
