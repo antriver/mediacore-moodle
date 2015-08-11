@@ -10,7 +10,7 @@
 A set of [Moodle](http://moodle.org) plugins that integrate with
 [MediaCore](http://mediacore.com).
 
-Designed to work with Moodle 2.3+. Tested and compatible up to Moodle v2.6.
+Designed to work with Moodle 2.4+. Tested and compatible up to Moodle v2.8.
 
 ## Overview ##
 These plugins provide a rich set of Moodle-MediaCore integrations using LMS-LTI
