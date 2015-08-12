@@ -106,26 +106,22 @@ class filter_mediacore extends moodle_text_filter {
 
             $iframehtml = null;
             if ((boolean)preg_match($this->_re_embed_url, $href)) {
+                $embedurl = $this->_maybe_get_lti_signed_url($href, $courseid);
                 $imgnode = $node->firstChild;
-                if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
-                    $href = $this->_generate_embed_url($href, $courseid);
-                } else {
-                    $href = htmlspecialchars($href);
-                }
-                extract($this->_get_image_elem_dimensions($imgnode));
-                $iframehtml = $this->_get_iframe_embed_html($href, $width, $height);
+                extract($this->_get_image_node_dimensions($imgnode));
+                $iframehtml = $this->_get_iframe_html($embedurl, $width, $height);
 
             } else if ((boolean)preg_match($this->_re_api1_public_urls, $href)) {
+                $embedurl = $this->_get_embed_url_from_api1_public_url($href, $courseid);
                 $imgnode = $node->firstChild;
-                extract($this->_get_image_elem_dimensions($imgnode));
-                $iframehtml = $this->_get_embed_html_from_api1_public_url(
-                    $href, $width, $height, $courseid);
+                extract($this->_get_image_node_dimensions($imgnode));
+                $iframehtml = $this->_get_iframe_html($embedurl, $width, $height);
 
             } else if ((boolean)preg_match($this->_re_api2_public_urls, $href)) {
+                $emebdurl = $this->_get_embed_url_from_api2_public_url($href, $courseid);
                 $width = $this->_default_thumb_width;
                 $height = $this->_default_thumb_height;
-                $iframehtml = $this->_get_embed_html_from_api2_public_url(
-                    $href, $width, $height, $courseid);
+                $iframehtml = $this->_get_iframe_html($embedurl, $width, $height);
             }
 
             if (isset($iframehtml)) {
@@ -137,23 +133,20 @@ class filter_mediacore extends moodle_text_filter {
         $pagehtml = $pagedoc->saveHTML();
 
         //remove html and body tags added during save
-        $sanitized_pagehtml = str_replace(
+        $pagehtml = str_replace(
             array('<html>', '</html>', '<body>', '</body>'),
             array('', '', '', ''),
             $pagehtml
         );
 
         //remove the doctype added during save
-        $sanitized_pagehtml = preg_replace('/^<!DOCTYPE.+?>/', '',
-            $sanitized_pagehtml);
-
-        return $sanitized_pagehtml;
+        return preg_replace('/^<!DOCTYPE.+?>/', '', $pagehtml);
     }
 
     /**
      * Fetch the width an height from an image element
      */
-    private function _get_image_elem_dimensions($imgnode) {
+    private function _get_image_node_dimensions($imgnode) {
         if ($imgnode && $imgnode instanceof DOMElement) {
             $width = $imgnode->getAttribute('width');
             $height = $imgnode->getAttribute('height');
@@ -171,81 +164,76 @@ class filter_mediacore extends moodle_text_filter {
     }
 
     /**
-     * Get the embed html by parsing the api1 view url for its slug
+     * Get the embed url by parsing the api1 view url for its slug
      * e.g. https://demo.mediacore.tv/media/{slug}?context_id=2
      *
      * @param string $href
      * @return string $id
      */
-    private function _get_embed_html_from_api1_public_url($href, $width, $height,
-            $courseid=null) {
+    private function _get_embed_url_from_api1_public_url($href, $courseid=null) {
         $patharr = explode('/', parse_url($href, PHP_URL_PATH));
         $slug = end($patharr);
-        return $this->_get_embed_html($slug, $width, $height, $courseid);
+        return $this->_get_embed_url_from_slug($slug, $courseid);
     }
 
     /**
-     * Get the embed html by parsing the api2 view url for its id
+     * Get the embed url by parsing the api2 view url for its id
      * e.g. http://demo.mediacore.tv/media/{id}/view
      *
      * @param string $href
      * @return string $id
      */
-    private function _get_embed_html_from_api2_public_url($href, $width, $height,
-        $courseid=null) {
+    private function _get_embed_url_from_api2_public_url($href, $courseid=null) {
         $patharr = explode('/', parse_url($href, PHP_URL_PATH));
         $id = $patharr[count($patharr) - 2];
-        return $this->_get_embed_html('id:' . $id, $width, $height, $courseid);
+        $slug = 'id:' . $id;
+        return $this->_get_embed_url_from_slug($slug, $courseid);
     }
 
     /**
-     * Get the media embed html LTI signed if applicable
+     * Get the media embed url LTI signed if applicable
      *
      * @param string $slug
-     * @param int $width
-     * @param int $height
      * @param int|null $courseid
      */
-    private function _get_embed_html($slug, $width, $height, $courseid=null) {
+    private function _get_embed_url_from_slug($slug, $courseid=null) {
         global $CFG;
-
         $embed_url = $this->_mcore_client->get_url('media', $slug, 'embed_player');
-        $embed_url = $this->_generate_embed_url($embed_url, $courseid);
-        return $this->_get_iframe_embed_html($embed_url, $width, $height);
+        return $this->_maybe_get_lti_signed_url($embed_url, $courseid);
     }
 
     /**
-     * Create an embed url
-     * @param string $embed_url
+     * Get a url, LTI-signed if applicable
+     * @param string $url
      * @return string
      */
-    private function _generate_embed_url($embed_url, $courseid=null) {
+    private function _maybe_get_lti_signed_url($url, $courseid=null) {
         global $CFG;
 
         if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
-            $pos = strpos($embed_url, '?');
+            $pos = strpos($url, '?');
             $params = array();
             if ($pos !== false) {
                 // Add the context_id to the query params
-                $qs = substr($embed_url, $pos + 1);
+                $qs = substr($url, $pos + 1);
                 parse_str($qs, $params);
-                $embed_url = substr($embed_url, 0, $pos);
+                $url = substr($url, 0, $pos);
             }
             $params['context_id'] = $courseid;
-            $embed_url .= '?' . http_build_query($params);
+            $url .= '?' . http_build_query($params);
 
             $site_url = $this->_mcore_client->get_siteurl();
             $content_url = $CFG->wwwroot.'/local/mediacore/sign.php';
-            $embed_url = str_replace($site_url, $content_url, $embed_url);
+            $url = str_replace($site_url, $content_url, $url);
         }
-        return $embed_url;
+        return $url;
     }
 
     /**
-     * Get the iframe embed html
+     * Get the iframe html
      * @return string
      */
-    private function _get_iframe_embed_html($embed_url, $width, $height) {
+    private function _get_iframe_html($url, $width, $height) {
         $template = '<iframe src="URL" ' .
             'width="WIDTH" ' .
             'height="HEIGHT" ' .
@@ -254,7 +242,7 @@ class filter_mediacore extends moodle_text_filter {
             'frameborder="0"> ' .
             '</iframe>';
         $patterns = array('/URL/', '/WIDTH/', '/HEIGHT/');
-        $replace = array($embed_url, $width, $height);
+        $replace = array($url, $width, $height);
         return preg_replace($patterns, $replace, $template);
     }
 
