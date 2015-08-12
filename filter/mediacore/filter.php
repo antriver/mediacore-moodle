@@ -91,22 +91,19 @@ class filter_mediacore extends moodle_text_filter {
             strpos($html, $this->_mcore_client->get_host()) === false) {
             return $html;
         }
-        $dom = new DomDocument();
-        $sanitized_html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
-        if (defined('LIBXML_HTML_NOIMPLIED') && defined('LIBXML_HTML_NODEFDTD')) {
-            @$dom->loadHtml($sanitized_html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        } else {
-            @$dom->loadHtml($sanitized_html);
-        }
-        $xpath = new DOMXPath($dom);
+        $pagedoc = new DomDocument();
+        $sanitized_html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        @$pagedoc->loadHtml($sanitized_html);
+
+        $xpath = new DOMXPath($pagedoc);
         foreach ($xpath->query('//a') as $node) {
             $href = $node->getAttribute('href');
             if (empty($href)) {
                 continue;
             }
             if ((boolean)preg_match($this->_re_embed_url, $href)) {
-                $newnode  = $dom->createDocumentFragment();
+                $newnode  = $pagedoc->createDocumentFragment();
                 $imgnode = $node->firstChild;
                 if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
                     $href = $this->_generate_embed_url($href, $courseid);
@@ -119,7 +116,7 @@ class filter_mediacore extends moodle_text_filter {
                 $node->parentNode->replaceChild($newnode, $node);
 
             } else if ((boolean)preg_match($this->_re_api1_public_urls, $href)) {
-                $newnode  = $dom->createDocumentFragment();
+                $newnode  = $pagedoc->createDocumentFragment();
                 $imgnode = $node->firstChild;
                 extract($this->_get_image_elem_dimensions($imgnode));
                 $html = $this->_get_embed_html_from_api1_public_url(
@@ -128,7 +125,7 @@ class filter_mediacore extends moodle_text_filter {
                 $node->parentNode->replaceChild($newnode, $node);
 
             } else if ((boolean)preg_match($this->_re_api2_public_urls, $href)) {
-                $newnode  = $dom->createDocumentFragment();
+                $newnode  = $pagedoc->createDocumentFragment();
                 $width = $this->_default_thumb_width;
                 $height = $this->_default_thumb_height;
                 $html = $this->_get_embed_html_from_api2_public_url(
@@ -137,7 +134,7 @@ class filter_mediacore extends moodle_text_filter {
                 $node->parentNode->replaceChild($newnode, $node);
             }
         }
-        return $dom->saveHTML();
+        return $pagedoc->saveHTML();
     }
 
     /**
