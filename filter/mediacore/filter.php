@@ -93,48 +93,61 @@ class filter_mediacore extends moodle_text_filter {
         }
 
         $pagedoc = new DomDocument();
-        $sanitized_html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
-        @$pagedoc->loadHtml($sanitized_html);
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        @$pagedoc->loadHtml($html);
 
         $xpath = new DOMXPath($pagedoc);
         foreach ($xpath->query('//a') as $node) {
+
             $href = $node->getAttribute('href');
             if (empty($href)) {
                 continue;
             }
+
+            $iframehtml = null;
             if ((boolean)preg_match($this->_re_embed_url, $href)) {
-                $newnode  = $pagedoc->createDocumentFragment();
                 $imgnode = $node->firstChild;
                 if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
                     $href = $this->_generate_embed_url($href, $courseid);
                 } else {
-                    $href = htmlspecialchars($href) ;
+                    $href = htmlspecialchars($href);
                 }
                 extract($this->_get_image_elem_dimensions($imgnode));
-                $html = $this->_get_iframe_embed_html($href, $width, $height);
-                $newnode->appendXML($html);
-                $node->parentNode->replaceChild($newnode, $node);
+                $iframehtml = $this->_get_iframe_embed_html($href, $width, $height);
 
             } else if ((boolean)preg_match($this->_re_api1_public_urls, $href)) {
-                $newnode  = $pagedoc->createDocumentFragment();
                 $imgnode = $node->firstChild;
                 extract($this->_get_image_elem_dimensions($imgnode));
-                $html = $this->_get_embed_html_from_api1_public_url(
+                $iframehtml = $this->_get_embed_html_from_api1_public_url(
                     $href, $width, $height, $courseid);
-                $newnode->appendXML($html);
-                $node->parentNode->replaceChild($newnode, $node);
 
             } else if ((boolean)preg_match($this->_re_api2_public_urls, $href)) {
-                $newnode  = $pagedoc->createDocumentFragment();
                 $width = $this->_default_thumb_width;
                 $height = $this->_default_thumb_height;
-                $html = $this->_get_embed_html_from_api2_public_url(
+                $iframehtml = $this->_get_embed_html_from_api2_public_url(
                     $href, $width, $height, $courseid);
-                $newnode->appendXML($html);
+            }
+
+            if (isset($iframehtml)) {
+                $newnode = $pagedoc->createDocumentFragment();
+                $newnode->appendXML($iframehtml);
                 $node->parentNode->replaceChild($newnode, $node);
             }
         }
-        return $pagedoc->saveHTML();
+        $pagehtml = $pagedoc->saveHTML();
+
+        //remove html and body tags added during save
+        $sanitized_pagehtml = str_replace(
+            array('<html>', '</html>', '<body>', '</body>'),
+            array('', '', '', ''),
+            $pagehtml
+        );
+
+        //remove the doctype added during save
+        $sanitized_pagehtml = preg_replace('/^<!DOCTYPE.+?>/', '',
+            $sanitized_pagehtml);
+
+        return $sanitized_pagehtml;
     }
 
     /**
