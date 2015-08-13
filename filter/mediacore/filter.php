@@ -104,43 +104,41 @@ class filter_mediacore extends moodle_text_filter {
                 continue;
             }
 
-            $iframehtml = null;
+            $embedurl = $width = $height = null;
             if ((boolean)preg_match($this->_re_embed_url, $href)) {
                 $embedurl = $this->_maybe_get_lti_signed_url($href, $courseid);
                 $imgnode = $node->firstChild;
                 extract($this->_get_image_node_dimensions($imgnode));
-                $iframehtml = $this->_get_iframe_html($embedurl, $width, $height);
 
             } else if ((boolean)preg_match($this->_re_api1_public_urls, $href)) {
                 $embedurl = $this->_get_embed_url_from_api1_public_url($href, $courseid);
                 $imgnode = $node->firstChild;
                 extract($this->_get_image_node_dimensions($imgnode));
-                $iframehtml = $this->_get_iframe_html($embedurl, $width, $height);
 
             } else if ((boolean)preg_match($this->_re_api2_public_urls, $href)) {
-                $emebdurl = $this->_get_embed_url_from_api2_public_url($href, $courseid);
+                $embedurl = $this->_get_embed_url_from_api2_public_url($href, $courseid);
                 $width = $this->_default_thumb_width;
                 $height = $this->_default_thumb_height;
-                $iframehtml = $this->_get_iframe_html($embedurl, $width, $height);
             }
 
-            if (isset($iframehtml)) {
+            if (isset($embedurl, $width, $height)) {
+                $iframehtml = $this->_get_iframe_html($embedurl, $width, $height);
                 $newnode = $pagedoc->createDocumentFragment();
                 $newnode->appendXML($iframehtml);
                 $node->parentNode->replaceChild($newnode, $node);
             }
         }
         $pagehtml = $pagedoc->saveHTML();
+        //
+        //remove the doctype added during save
+        $pagehtml = preg_replace('/^<!DOCTYPE.+?>/', '', $pagehtml);
 
         //remove html and body tags added during save
-        $pagehtml = str_replace(
+        return str_replace(
             array('<html>', '</html>', '<body>', '</body>'),
             array('', '', '', ''),
             $pagehtml
         );
-
-        //remove the doctype added during save
-        return preg_replace('/^<!DOCTYPE.+?>/', '', $pagehtml);
     }
 
     /**
