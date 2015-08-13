@@ -180,7 +180,7 @@ class filter_mediacore extends moodle_text_filter {
 
     /**
      * Get the embed url by parsing the api2 view url for its id
-     * e.g. http://demo.mediacore.tv/media/{id}/view
+     * e.g. http://demo.mediacore.tv/media/id:{id}/view
      *
      * @param string $href
      * @return string
