@@ -44,7 +44,7 @@ require_once('mediacore_client.class.php');
  */
 class filter_mediacore extends moodle_text_filter {
 
-    private $_mcore_client;
+    private $_client;
     private $_re_api1_public_urls;
     private $_re_api2_public_urls;
     private $_re_embed_url;
@@ -58,8 +58,8 @@ class filter_mediacore extends moodle_text_filter {
      */
     public function __construct($context, array $localconfig) {
         parent::__construct($context, $localconfig);
-        $this->_mcore_client = new mediacore_client();
-        $host = $this->_mcore_client->get_host();
+        $this->_client = new mediacore_client();
+        $host = $this->_client->get_host();
         $this->_re_api1_public_urls = "/($host)[:0-9]*\/media\/[:a-z0-9_-]+/";
         $this->_re_api2_public_urls = "/($host)[:0-9]*\/api2\/media\/[0-9]+\/view/";
         $this->_re_embed_url = "/($host)[:0-9]*\/media\/[:a-z0-9_-]+\/embed_player.*/";
@@ -88,7 +88,7 @@ class filter_mediacore extends moodle_text_filter {
         $courseid = (isset($COURSE->id)) ? $COURSE->id : null;
 
         if (empty($html) || !is_string($html) ||
-            strpos($html, $this->_mcore_client->get_host()) === false) {
+            strpos($html, $this->_client->get_host()) === false) {
             return $html;
         }
 
@@ -198,7 +198,7 @@ class filter_mediacore extends moodle_text_filter {
      */
     private function _get_embed_url_from_slug($slug, $courseid=null) {
         global $CFG;
-        $embed_url = $this->_mcore_client->get_url('media', $slug, 'embed_player');
+        $embed_url = $this->_client->get_url('media', $slug, 'embed_player');
         return $this->_maybe_get_lti_signed_url($embed_url, $courseid);
     }
 
@@ -210,7 +210,7 @@ class filter_mediacore extends moodle_text_filter {
     private function _maybe_get_lti_signed_url($url, $courseid=null) {
         global $CFG;
 
-        if ($this->_mcore_client->has_lti_config() && !is_null($courseid)) {
+        if ($this->_client->has_lti_config() && !is_null($courseid)) {
             $pos = strpos($url, '?');
             $params = array();
             if ($pos !== false) {
@@ -222,7 +222,7 @@ class filter_mediacore extends moodle_text_filter {
             $params['context_id'] = $courseid;
             $url .= '?' . http_build_query($params);
 
-            $site_url = $this->_mcore_client->get_siteurl();
+            $site_url = $this->_client->get_siteurl();
             $content_url = $CFG->wwwroot.'/local/mediacore/sign.php';
             $url = str_replace($site_url, $content_url, $url);
         }
