@@ -94,10 +94,10 @@ class filter_mediacore extends moodle_text_filter {
         $dom = new DomDocument();
         $sanitized_html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
-        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-            @$dom->loadHtml($sanitized_html);
-        } else {
+        if (defined('LIBXML_HTML_NOIMPLIED') && defined('LIBXML_HTML_NODEFDTD')) {
             @$dom->loadHtml($sanitized_html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        } else {
+            @$dom->loadHtml($sanitized_html);
         }
         $xpath = new DOMXPath($dom);
         foreach ($xpath->query('//a') as $node) {
