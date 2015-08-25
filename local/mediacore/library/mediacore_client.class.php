@@ -348,11 +348,9 @@ class mediacore_client
         $user_full = trim($user_given . ' ' . $user_family);
         $user_email = (isset($USER->email)) ? $USER->email: '';
 
-        if (strpos($CFG->release, '2.8') === false) {
+        if (floatval($CFG->release) < 2.8) {
             $roles = lti_get_ims_role($USER, 0, $course->id);
         } else {
-            // NOTE: Moodle 2.8 adds support for specifying whether this is
-            //       an LTI 2.0 launch.
             $roles = lti_get_ims_role($USER, 0, $course->id, false);
         }
 
