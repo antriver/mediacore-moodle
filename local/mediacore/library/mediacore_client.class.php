@@ -450,7 +450,7 @@ class mediacore_client
         //default non-lti urls
         $chooser_js_url = $this->get_chooser_js_url();
         $chooser_url = $this->get_unsigned_chooser_url();
-        $launch_url = null;
+        $launch_url = $chooser_url;
 
         if ($this->has_lti_config() && isset($COURSE->id)) {
             $chooser_js_url = $this->get_chooser_js_url($COURSE->id);
