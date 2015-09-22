@@ -382,6 +382,15 @@ class mediacore_client
             $params['custom_use_trusted_embed'] = 'true';
         }
 
+        // Extra params we might expect to be part of the signed request
+        if (isset($USER->idnumber)) {
+            $params['lis_person_sourcedid'] = $USER->idnumber;
+        }
+        if (isset($course->idnumber)) {
+            $params['context_type'] = 'CourseSection';
+            $params['lis_course_section_sourcedid'] = $course->idnumber;
+        }
+
         // Add debug flag for local testing.
         if ((boolean)$CFG->debugdisplay) {
             $params['debug'] = 'true';
